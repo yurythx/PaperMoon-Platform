@@ -25,6 +25,13 @@ FRONTEND_URL={{ papermoon_frontend_url }}
 NEXTJS_INTERNAL_URL=http://nextjs:3000
 NEXT_PUBLIC_SITE_URL={{ papermoon_frontend_url }}
 
+# IMPORTANTE: remover esta linha (ou setar "true") assim que o acesso real
+# passar a ser via Cloudflare Tunnel em HTTPS. Enquanto o teste é feito via
+# IP puro em HTTP (sem tunnel ainda), o cookie de sessão do frontend exige
+# isso — com "Secure" e sem HTTPS, o navegador descarta o cookie de login
+# silenciosamente e /api/auth/me sempre retorna 401 mesmo com login OK.
+SECURE_COOKIES={{ papermoon_secure_cookies | default('false') }}
+
 EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
 EMAIL_HOST={{ papermoon_email_host }}
 EMAIL_PORT={{ papermoon_email_port }}
