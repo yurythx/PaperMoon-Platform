@@ -11,7 +11,7 @@ nunca diretamente em `site.yml`.
 | `docker_app_name` | sim | Nome da app, usado no path padrão de deploy |
 | `docker_app_compose_src` | sim | Caminho, no controlador Ansible, do `docker-compose.yml` (normalmente `{{ playbook_dir }}/../../docker/<app>/docker-compose.yml`) |
 | `docker_app_dir` | não | Diretório remoto da stack (default `/opt/docker/<docker_app_name>`) |
-| `docker_app_env` | não | Dict de variáveis que vira o `.env` da stack (default vazio) |
+| `docker_app_env` | não | Dict de variáveis que vira o `.env` da stack (default vazio). **Só é escrito na primeira vez** — re-runs não sobrescrevem um `.env` já existente no host (evita clobbar segredo real com placeholder se o `host_vars` correspondente algum dia regredir). Pra forçar regeneração de propósito (rotação de segredo), apague o `.env` no host antes de rodar de novo, ou passe `docker_app_force_env_regen: true` nessa execução. |
 | `docker_app_extra_files` | não | Lista de `{src, dest, template}` para arquivos/pastas extras além de compose+.env (ex: `prometheus.yml`, `provisioning/` do Grafana, `config.yml.j2` do cloudflared). `dest` é relativo a `docker_app_dir`. `template: true` renderiza como Jinja2 em vez de copiar como está. Processados **antes** do `docker compose up`. **Se `src` for uma pasta, termine com `/`** (ex: `.../provisioning/`) — sem a barra, o `copy` do Ansible copia a pasta *para dentro* de `dest`, resultando em `dest/provisioning/...` aninhado em vez do conteúdo direto em `dest/...`. |
 
 ## Exemplo (Fase 3b)

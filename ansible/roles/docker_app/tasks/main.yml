@@ -49,11 +49,27 @@
     dest: "{{ docker_app_dir }}/docker-compose.yml"
     mode: "0640"
 
-- name: Gerar .env da stack
+# Sem isso, TODO re-run do Ansible (site.yml de manutenção, patch de SO, etc.)
+# regenerava o .env incondicionalmente a partir de docker_app_env — inofensivo
+# enquanto o host_vars correspondente guarda o segredo real, mas catastrófico
+# se ele algum dia voltar a "CHANGE_ME" (reset de git, clone novo do
+# controlador): o próximo run sobrescreveria o .env de produção com lixo e
+# reiniciaria o container quebrado, silenciosamente. Gerar só na primeira vez
+# (mesmo padrão já usado pelo .env.production do papermoon) elimina esse
+# raio de explosão — trocar um segredo de propósito exige apagar o .env do
+# host manualmente antes de rodar de novo, ou usar
+# `docker_app_force_env_regen: true` pontualmente.
+- name: Verificar se o .env da stack já existe
+  ansible.builtin.stat:
+    path: "{{ docker_app_dir }}/.env"
+  register: docker_app_env_stat
+
+- name: Gerar .env da stack (só na primeira vez)
   ansible.builtin.template:
     src: env.j2
     dest: "{{ docker_app_dir }}/.env"
     mode: "0600"
+  when: not docker_app_env_stat.stat.exists or (docker_app_force_env_regen | default(false))
 
 # 0644 (não 0640): estes arquivos são bind-montados DENTRO de containers cujo
 # processo roda com um UID interno qualquer (ex: prometheus roda como uid
