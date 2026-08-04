@@ -12,7 +12,7 @@ firewall_lan_cidr: "192.168.1.0/24"
 # (ssh_public_keys) — mantidas aqui porque Terraform e Ansible não
 # compartilham variáveis entre si nesta arquitetura simples.
 ssh_public_keys:
-  - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI... seu-usuario@sua-maquina"
+  - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICh388T4h2emfa8nqsFmNS7JTKMa9nipCa32yLESJwcV papermoon-platform-terraform"
 
 # Endurecimento de SSH aplicado pela role "common". Deixe true em produção;
 # só desligue temporariamente se precisar depurar acesso.
