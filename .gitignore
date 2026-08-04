@@ -15,6 +15,7 @@ crash.*.log
 ansible/inventory/production
 *.vault
 vault_pass*
+.vault_pass*
 
 # Variáveis reais de bootstrap (só o .example vai pro Git)
 bootstrap/vars.sh
