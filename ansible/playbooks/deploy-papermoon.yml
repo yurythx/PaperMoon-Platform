@@ -23,6 +23,18 @@
         state: directory
         mode: "0755"
 
+    # /opt/docker é root:root 0755 (sem write pra group/other) — suporte não
+    # consegue criar a subpasta "papermoon" ali sozinho. Cria como root e já
+    # entrega dona pra suporte, então o clone (rodando como suporte, dir já
+    # existente e vazio) funciona normalmente.
+    - name: Garantir {{ papermoon_dir }}, já pertencendo ao suporte
+      ansible.builtin.file:
+        path: "{{ papermoon_dir }}"
+        state: directory
+        mode: "0755"
+        owner: "{{ support_user }}"
+        group: "{{ support_user }}"
+
     - name: Clonar o repositório do PaperMoon (só na primeira vez — deploy.sh cuida do 'git pull' depois)
       ansible.builtin.git:
         repo: "https://github.com/yurythx/papermoon.git"
