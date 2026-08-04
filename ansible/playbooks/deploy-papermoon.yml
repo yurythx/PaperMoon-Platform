@@ -1,0 +1,61 @@
+---
+# Diferente de todos os outros apps: NÃO usa a role genérica "docker_app".
+# O PaperMoon já tem seu próprio deploy.sh (git pull + build + migrate +
+# collectstatic + health-check + rollback automático) — reaproveitar isso é
+# melhor do que reimplementar a mesma lógica em Ansible, e respeita a regra
+# de não modificar o código/ferramental da aplicação.
+- name: Deploy PaperMoon
+  hosts: papermoon
+  vars:
+    papermoon_dir: /opt/docker/papermoon
+
+  tasks:
+    - name: Instalar git (necessário para o deploy.sh)
+      ansible.builtin.apt:
+        name: git
+        state: present
+
+    - name: Clonar o repositório do PaperMoon (só na primeira vez — deploy.sh cuida do 'git pull' depois)
+      ansible.builtin.git:
+        repo: "https://github.com/yurythx/papermoon.git"
+        dest: "{{ papermoon_dir }}"
+        version: main
+        update: false
+      become_user: "{{ support_user }}"
+
+    - name: Garantir que o diretório pertence ao usuário de suporte
+      ansible.builtin.file:
+        path: "{{ papermoon_dir }}"
+        owner: "{{ support_user }}"
+        group: "{{ support_user }}"
+        recurse: true
+
+    - name: Verificar se .env.production já existe
+      ansible.builtin.stat:
+        path: "{{ papermoon_dir }}/.env.production"
+      register: papermoon_env_stat
+
+    - name: Gerar .env.production (só na primeira vez)
+      ansible.builtin.template:
+        src: templates/papermoon-env-production.j2
+        dest: "{{ papermoon_dir }}/.env.production"
+        mode: "0600"
+        owner: "{{ support_user }}"
+        group: "{{ support_user }}"
+      when: not papermoon_env_stat.stat.exists
+
+    # git pull + docker compose build + migrations + collectstatic +
+    # health-check + rollback automático em caso de falha — tudo já
+    # implementado em deploy.sh. Idempotente na prática: rodar de novo sem
+    # mudanças só refaz build/health-check, não quebra nada.
+    - name: Rodar deploy.sh (pull + build + migrate + health-check)
+      ansible.builtin.command:
+        cmd: bash deploy.sh
+        chdir: "{{ papermoon_dir }}"
+      become_user: "{{ support_user }}"
+      register: papermoon_deploy
+      changed_when: true
+
+    - name: Últimas linhas da saída do deploy
+      ansible.builtin.debug:
+        msg: "{{ papermoon_deploy.stdout_lines[-15:] }}"

@@ -1,0 +1,9 @@
+---
+qbittorrent_puid: 1000
+qbittorrent_pgid: 1000
+qbittorrent_webui_port: 8080
+
+firewall_allowed_ports:
+  - { port: 8080, proto: tcp, from: "{{ firewall_lan_cidr }}" } # WebUI, só LAN
+  - { port: 6881, proto: tcp } # peers — precisa aceitar a internet (ver README)
+  - { port: 6881, proto: udp }

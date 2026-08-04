@@ -1,0 +1,5 @@
+---
+# Wrapper fino para que o comando final documentado no CLAUDE.md
+# ("ansible-playbook site.yml", rodado de dentro de ansible/) funcione ao
+# pé da letra. O conteúdo real fica em playbooks/site.yml.
+- import_playbook: playbooks/site.yml

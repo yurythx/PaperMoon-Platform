@@ -1,0 +1,6 @@
+---
+navidrome_scan_schedule: "@every 1h"
+navidrome_log_level: info
+
+firewall_allowed_ports:
+  - { port: 4533, proto: tcp, from: "{{ firewall_lan_cidr }}" }

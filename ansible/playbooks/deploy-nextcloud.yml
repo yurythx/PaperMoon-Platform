@@ -1,0 +1,30 @@
+---
+- name: Deploy Nextcloud
+  hosts: nextcloud
+  roles:
+    - role: docker_app
+      vars:
+        docker_app_name: nextcloud
+        docker_app_compose_src: "{{ playbook_dir }}/../../docker/nextcloud/docker-compose.yml"
+        docker_app_env:
+          MYSQL_HOST: "{{ nextcloud_mysql_host }}"
+          MYSQL_DATABASE: "{{ nextcloud_mysql_database }}"
+          MYSQL_USER: "{{ nextcloud_mysql_user }}"
+          MYSQL_PASSWORD: "{{ nextcloud_mysql_password }}"
+          REDIS_HOST: "{{ nextcloud_redis_host }}"
+          REDIS_HOST_PASSWORD: "{{ nextcloud_redis_password }}"
+          NEXTCLOUD_TRUSTED_DOMAINS: "{{ nextcloud_trusted_domains }}"
+          NEXTCLOUD_ADMIN_USER: "{{ nextcloud_admin_user }}"
+          NEXTCLOUD_ADMIN_PASSWORD: "{{ nextcloud_admin_password }}"
+          PHP_MEMORY_LIMIT: "512M"
+          PHP_UPLOAD_LIMIT: "1G"
+
+  tasks:
+    # Nextcloud recomenda cron.php em vez do modo AJAX para tarefas de fundo
+    # (mais confiável, não depende de visitas ao site para disparar).
+    - name: Agendar cron.php do Nextcloud a cada 5 minutos
+      ansible.builtin.cron:
+        name: "nextcloud cron"
+        minute: "*/5"
+        user: "{{ support_user }}"
+        job: "docker exec -u www-data nextcloud php cron.php"

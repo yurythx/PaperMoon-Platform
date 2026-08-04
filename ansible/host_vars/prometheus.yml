@@ -1,0 +1,5 @@
+---
+prometheus_retention: "15d"
+
+firewall_allowed_ports:
+  - { port: 9090, proto: tcp, from: "{{ firewall_lan_cidr }}" }

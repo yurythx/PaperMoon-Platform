@@ -1,0 +1,14 @@
+---
+# Vars comuns a todo host que roda Docker (aplicadas pela role docker_engine).
+docker_apt_repo_url: "https://download.docker.com/linux/ubuntu"
+docker_packages:
+  - docker-ce
+  - docker-ce-cli
+  - containerd.io
+  - docker-buildx-plugin
+  - docker-compose-plugin
+
+# Aplicado a TODO host (junto com firewall_allowed_ports, específico de cada
+# um) — evita ter que repetir esta regra em 12 arquivos de host_vars.
+firewall_common_ports:
+  - { port: 9100, proto: tcp, from: "192.168.1.131" } # node_exporter, só o Prometheus pode ler

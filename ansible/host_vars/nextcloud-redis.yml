@@ -1,0 +1,9 @@
+---
+# PLACEHOLDER — substitua o valor abaixo e criptografe este arquivo antes de
+# usar em produção:
+#   ansible-vault encrypt host_vars/nextcloud-redis.yml
+redis_password: "CHANGE_ME_REDIS_PASSWORD"
+
+# Só o container do Nextcloud pode alcançar a porta do Redis.
+firewall_allowed_ports:
+  - { port: 6379, proto: tcp, from: "192.168.1.120" }

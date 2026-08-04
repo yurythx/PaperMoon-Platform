@@ -1,0 +1,14 @@
+---
+- name: Deploy Prometheus
+  hosts: prometheus
+  roles:
+    - role: docker_app
+      vars:
+        docker_app_name: prometheus
+        docker_app_dir: "/opt/docker/prometheus"
+        docker_app_compose_src: "{{ playbook_dir }}/../../docker/prometheus/docker-compose.yml"
+        docker_app_env:
+          RETENTION: "{{ prometheus_retention }}"
+        docker_app_extra_files:
+          - src: "{{ playbook_dir }}/../../docker/prometheus/prometheus.yml"
+            dest: "prometheus.yml"

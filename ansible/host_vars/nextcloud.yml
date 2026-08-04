@@ -1,0 +1,25 @@
+---
+# PLACEHOLDER — substitua os valores abaixo e criptografe este arquivo antes
+# de usar em produção: ansible-vault encrypt host_vars/nextcloud.yml
+#
+# mysql_password e redis_password DEVEM bater com host_vars/nextcloud-mariadb.yml
+# (mariadb_password) e host_vars/nextcloud-redis.yml (redis_password) — ver
+# docker/nextcloud/README.md.
+nextcloud_mysql_host: "192.168.1.121"
+nextcloud_mysql_database: nextcloud
+nextcloud_mysql_user: nextcloud
+nextcloud_mysql_password: "CHANGE_ME_APP_PASSWORD"
+nextcloud_redis_host: "192.168.1.122"
+nextcloud_redis_password: "CHANGE_ME_REDIS_PASSWORD"
+nextcloud_trusted_domains: "192.168.1.120"
+nextcloud_admin_user: admin
+nextcloud_admin_password: "CHANGE_ME_ADMIN_PASSWORD"
+
+# LAN inteira por enquanto (não há Cloudflare Tunnel apontando pra cá ainda).
+firewall_allowed_ports:
+  - { port: 8080, proto: tcp, from: "{{ firewall_lan_cidr }}" }
+
+# Nome de volume assume projeto Compose "nextcloud" — confirme com
+# 'docker volume ls' no host antes de confiar 100%.
+backup_jobs:
+  - { name: nextcloud-data, type: volume, volume: nextcloud_nextcloud_data }

@@ -1,0 +1,5 @@
+---
+komga_server_port: 25600
+
+firewall_allowed_ports:
+  - { port: 25600, proto: tcp, from: "{{ firewall_lan_cidr }}" }

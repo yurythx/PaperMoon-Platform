@@ -1,0 +1,17 @@
+---
+- name: Deploy Grafana
+  hosts: grafana
+  roles:
+    - role: docker_app
+      vars:
+        docker_app_name: grafana
+        docker_app_dir: "/opt/docker/grafana"
+        docker_app_compose_src: "{{ playbook_dir }}/../../docker/grafana/docker-compose.yml"
+        docker_app_env:
+          TZ: "{{ timezone }}"
+          GF_ADMIN_USER: "{{ grafana_admin_user }}"
+          GF_ADMIN_PASSWORD: "{{ grafana_admin_password }}"
+          GF_ROOT_URL: "{{ grafana_root_url }}"
+        docker_app_extra_files:
+          - src: "{{ playbook_dir }}/../../docker/grafana/provisioning"
+            dest: "provisioning"

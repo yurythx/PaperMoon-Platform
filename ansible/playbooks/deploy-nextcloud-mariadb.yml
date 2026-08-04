@@ -1,0 +1,13 @@
+---
+- name: Deploy MariaDB (Nextcloud)
+  hosts: nextcloud-mariadb
+  roles:
+    - role: docker_app
+      vars:
+        docker_app_name: nextcloud-mariadb
+        docker_app_compose_src: "{{ playbook_dir }}/../../docker/nextcloud-mariadb/docker-compose.yml"
+        docker_app_env:
+          MARIADB_ROOT_PASSWORD: "{{ mariadb_root_password }}"
+          MARIADB_DATABASE: "{{ mariadb_database }}"
+          MARIADB_USER: "{{ mariadb_user }}"
+          MARIADB_PASSWORD: "{{ mariadb_password }}"

@@ -1,0 +1,25 @@
+global:
+  scrape_interval: 30s
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  # Fase 4: node_exporter instalado em todos os hosts pela role Ansible
+  # homônima. Um alvo por container (inclui o próprio Prometheus/Grafana).
+  - job_name: node
+    static_configs:
+      - targets:
+          - "192.168.1.101:9100" # cloudflare-tunnel
+          - "192.168.1.102:9100" # papermoon
+          - "192.168.1.110:9100" # jellyfin
+          - "192.168.1.111:9100" # komga
+          - "192.168.1.112:9100" # qbittorrent
+          - "192.168.1.113:9100" # navidrome
+          - "192.168.1.120:9100" # nextcloud
+          - "192.168.1.121:9100" # nextcloud-mariadb
+          - "192.168.1.122:9100" # nextcloud-redis
+          - "192.168.1.123:9100" # vaultwarden
+          - "192.168.1.130:9100" # grafana
+          - "192.168.1.131:9100" # prometheus (a si mesmo, via node_exporter)

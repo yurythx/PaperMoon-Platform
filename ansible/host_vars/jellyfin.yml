@@ -1,0 +1,5 @@
+---
+jellyfin_render_gid: 104 # confirme com 'getent group render' dentro da LXC
+
+firewall_allowed_ports:
+  - { port: 8096, proto: tcp, from: "{{ firewall_lan_cidr }}" }

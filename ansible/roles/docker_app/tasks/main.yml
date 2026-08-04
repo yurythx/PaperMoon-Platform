@@ -1,0 +1,64 @@
+---
+# Role genérica: sobe QUALQUER stack docker/<app>/ deste monorepo. Não sabe
+# nada sobre a aplicação em si — recebe tudo por variável do playbook que a
+# inclui (ver playbooks/deploy-<app>.yml, criado na Fase 3b).
+#
+# Variáveis esperadas:
+#   docker_app_name         (ex: "jellyfin")
+#   docker_app_compose_src  (caminho local, no controlador, do docker-compose.yml)
+#   docker_app_dir          (default: /opt/docker/<docker_app_name>)
+#   docker_app_env          (dict de variáveis -> vira o .env da stack)
+#   docker_app_extra_files  (lista de {src, dest, template} — arquivos/pastas
+#                            extras além de compose+.env, ex: prometheus.yml,
+#                            provisioning/ do Grafana, ou config.yml.j2 do
+#                            cloudflared. 'dest' é relativo a docker_app_dir.
+#                            'template: true' renderiza como Jinja2 (module
+#                            template) em vez de copiar como está (copy).
+
+- name: Definir diretório padrão da stack, se não sobrescrito
+  ansible.builtin.set_fact:
+    docker_app_dir: "{{ docker_app_dir | default('/opt/docker/' + docker_app_name) }}"
+
+- name: Criar diretório da stack
+  ansible.builtin.file:
+    path: "{{ docker_app_dir }}"
+    state: directory
+    mode: "0750"
+    owner: "{{ support_user }}"
+    group: "{{ support_user }}"
+
+- name: Copiar docker-compose.yml
+  ansible.builtin.copy:
+    src: "{{ docker_app_compose_src }}"
+    dest: "{{ docker_app_dir }}/docker-compose.yml"
+    mode: "0640"
+
+- name: Gerar .env da stack
+  ansible.builtin.template:
+    src: env.j2
+    dest: "{{ docker_app_dir }}/.env"
+    mode: "0600"
+
+- name: Copiar arquivos/pastas de configuração extras (estáticos)
+  ansible.builtin.copy:
+    src: "{{ item.src }}"
+    dest: "{{ docker_app_dir }}/{{ item.dest }}"
+    mode: "0640"
+  loop: "{{ docker_app_extra_files }}"
+  when: not (item.template | default(false))
+
+- name: Renderizar arquivos de configuração extras (Jinja2)
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ docker_app_dir }}/{{ item.dest }}"
+    mode: "0640"
+  loop: "{{ docker_app_extra_files }}"
+  when: item.template | default(false)
+
+# Sempre roda (não só quando o compose/.env muda) — o próprio módulo
+# docker_compose_v2 já é idempotente e só recria containers cujo config mudou.
+- name: Subir/atualizar a stack via Docker Compose
+  community.docker.docker_compose_v2:
+    project_src: "{{ docker_app_dir }}"
+    pull: always
+    state: present

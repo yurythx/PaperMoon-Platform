@@ -1,0 +1,31 @@
+# Segredos e estado local — nunca versionar
+*.tfvars
+!*.tfvars.example
+*.auto.tfvars
+.env
+!.env.example
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+
+# Inventário Ansible com dados reais / vaults
+ansible/inventory/production
+*.vault
+vault_pass*
+
+# Variáveis reais de bootstrap (só o .example vai pro Git)
+bootstrap/vars.sh
+
+# docker/papermoon é um repositório Git próprio (git@github.com:yurythx/papermoon.git),
+# só relocado para dentro do monorepo — não é rastreado por este .git para evitar
+# um gitlink quebrado sem .gitmodules. Histórico e commits continuam em seu próprio remote.
+docker/papermoon/
+
+# SO / editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

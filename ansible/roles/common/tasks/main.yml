@@ -1,0 +1,83 @@
+---
+- name: Atualizar cache do apt
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Atualizar pacotes do sistema
+  ansible.builtin.apt:
+    upgrade: safe
+
+- name: Instalar pacotes base
+  ansible.builtin.apt:
+    name:
+      - curl
+      - vim
+      - htop
+      - ufw
+      - ca-certificates
+      - unattended-upgrades
+    state: present
+
+- name: Definir timezone
+  community.general.timezone:
+    name: "{{ timezone }}"
+
+# --- Atualizações automáticas de segurança (Fase 4) ---
+# Patches de segurança são aplicados sozinhos; reboot (raro — só
+# kernel/glibc) fica pendente até rodar manualmente, para nunca reiniciar um
+# host sem aviso. Confirmado com o usuário.
+- name: Habilitar atualização automática de segurança, sem reboot automático
+  ansible.builtin.copy:
+    dest: /etc/apt/apt.conf.d/51papermoon-platform-unattended-upgrades
+    content: |
+      APT::Periodic::Update-Package-Lists "1";
+      APT::Periodic::Unattended-Upgrade "1";
+      Unattended-Upgrade::Automatic-Reboot "false";
+    mode: "0644"
+
+- name: Garantir que o serviço unattended-upgrades está ativo
+  ansible.builtin.systemd:
+    name: unattended-upgrades
+    enabled: true
+    state: started
+
+- name: Criar usuário de suporte
+  ansible.builtin.user:
+    name: "{{ support_user }}"
+    groups: sudo
+    append: true
+    shell: /bin/bash
+    create_home: true
+
+- name: Autorizar chaves SSH para o usuário de suporte
+  ansible.posix.authorized_key:
+    user: "{{ support_user }}"
+    key: "{{ item }}"
+  loop: "{{ ssh_public_keys }}"
+
+- name: Permitir sudo sem senha para o usuário de suporte (necessário para automação sem TTY)
+  ansible.builtin.copy:
+    dest: "/etc/sudoers.d/{{ support_user }}"
+    content: "{{ support_user }} ALL=(ALL) NOPASSWD:ALL\n"
+    mode: "0440"
+    validate: "visudo -cf %s"
+
+# --- Endurecimento de SSH ---
+# Roda por último e só depois que o usuário de suporte já tem sudo + chave
+# funcionando, para nunca ficar sem forma de acessar o host.
+- name: Desabilitar autenticação por senha via SSH
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?PasswordAuthentication'
+    line: 'PasswordAuthentication no'
+  when: harden_ssh | bool
+  notify: Reiniciar ssh
+
+- name: Desabilitar login root via SSH
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?PermitRootLogin'
+    line: 'PermitRootLogin no'
+  when: harden_ssh | bool
+  notify: Reiniciar ssh

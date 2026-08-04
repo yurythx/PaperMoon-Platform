@@ -1,0 +1,28 @@
+services:
+  jellyfin:
+    image: jellyfin/jellyfin:latest
+    container_name: jellyfin
+    restart: unless-stopped
+    group_add:
+      - "${RENDER_GID}"
+    devices:
+      - /dev/dri/renderD128:/dev/dri/renderD128
+    environment:
+      TZ: ${TZ}
+    volumes:
+      - jellyfin_config:/config
+      - jellyfin_cache:/cache
+      - /data/movies-1:/media/movies-1:ro
+      - /data/movies-2:/media/movies-2:ro
+      - /data/series-1:/media/series-1:ro
+      - /data/series-2:/media/series-2:ro
+      - /data/anime-1:/media/anime-1:ro
+      - /data/anime-2:/media/anime-2:ro
+      - /data/photos-1:/media/photos-1:ro
+      - /data/photos-2:/media/photos-2:ro
+    ports:
+      - "8096:8096"
+
+volumes:
+  jellyfin_config:
+  jellyfin_cache:

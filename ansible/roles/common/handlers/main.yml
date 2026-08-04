@@ -1,0 +1,5 @@
+---
+- name: Reiniciar ssh
+  ansible.builtin.service:
+    name: ssh # nome do serviço no Ubuntu/Debian (não "sshd")
+    state: restarted

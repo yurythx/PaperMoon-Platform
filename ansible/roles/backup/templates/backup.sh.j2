@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Gerado pelo Ansible (role backup) — não editar manualmente no host.
+set -euo pipefail
+
+DEST="{{ backup_destination_dir }}"
+DATE=$(date +%Y-%m-%d_%H%M%S)
+mkdir -p "$DEST"
+
+{% for job in backup_jobs %}
+echo "[backup] {{ job.name }} ({{ job.type }})"
+{% if job.type == 'postgres' %}
+docker exec {{ job.container }} pg_dump -U {{ job.user }} {{ job.database }} | gzip > "$DEST/{{ job.name }}_${DATE}.sql.gz"
+{% elif job.type == 'mariadb' %}
+docker exec -e MYSQL_PWD='{{ job.password }}' {{ job.container }} mysqldump -u {{ job.user }} {{ job.database }} | gzip > "$DEST/{{ job.name }}_${DATE}.sql.gz"
+{% elif job.type == 'volume' %}
+docker run --rm -v {{ job.volume }}:/source:ro -v "$DEST":/backup alpine \
+  tar czf "/backup/{{ job.name }}_${DATE}.tar.gz" -C /source .
+{% endif %}
+{% endfor %}
+
+# Retenção: apaga backups locais mais antigos que {{ backup_retention_days }} dias.
+find "$DEST" -type f -name '*.gz' -mtime +{{ backup_retention_days }} -delete
+
+echo "[backup] concluído em $(date)"

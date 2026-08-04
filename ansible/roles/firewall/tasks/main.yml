@@ -1,0 +1,32 @@
+---
+# Ordem importa: as regras de allow (incluindo SSH) são aplicadas ANTES de
+# habilitar o ufw, para nunca correr o risco de travar o próprio acesso SSH
+# no momento em que o firewall é ligado.
+
+- name: Definir política padrão - negar entrada
+  community.general.ufw:
+    direction: incoming
+    policy: deny
+
+- name: Definir política padrão - permitir saída
+  community.general.ufw:
+    direction: outgoing
+    policy: allow
+
+- name: Permitir SSH
+  community.general.ufw:
+    rule: allow
+    port: "22"
+    proto: tcp
+
+- name: Permitir portas comuns a todos os hosts + específicas da stack deste host
+  community.general.ufw:
+    rule: allow
+    port: "{{ item.port }}"
+    proto: "{{ item.proto | default('tcp') }}"
+    src: "{{ item.from | default('any') }}"
+  loop: "{{ (firewall_common_ports | default([])) + firewall_allowed_ports }}"
+
+- name: Habilitar ufw
+  community.general.ufw:
+    state: enabled

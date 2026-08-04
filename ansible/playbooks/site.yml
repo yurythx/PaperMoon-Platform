@@ -1,0 +1,16 @@
+---
+# Entrypoint da Fase 3a: prepara todos os hosts Docker (sistema, Docker
+# Engine, firewall). O deploy de cada app (Fase 3b) é feito por playbooks
+# separados (playbooks/deploy-<app>.yml), não aqui — isso permite atualizar
+# uma stack sem tocar na configuração de sistema dos outros 9 hosts.
+#
+# Primeira execução num host novo (criado pelo Terraform, sem o usuário
+# "suporte" ainda): ansible-playbook playbooks/site.yml -e ansible_user=root
+- name: Preparar hosts Docker
+  hosts: docker_hosts
+  roles:
+    - common
+    - docker_engine
+    - node_exporter
+    - backup
+    - firewall

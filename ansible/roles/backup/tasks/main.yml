@@ -1,0 +1,40 @@
+---
+# Role genérica de backup local, aplicada a todo docker_hosts mas só faz
+# algo em hosts que definem 'backup_jobs' (host_vars) — a maioria fica
+# vazia e a role não cria nada nela (guard 'when' em toda task).
+#
+# Tipos de job suportados: postgres, mariadb, volume (dump ou tar via um
+# container Alpine descartável, sem precisar saber o path real do volume
+# no host). Ver docs/backup.md.
+
+- name: Criar diretório de destino dos backups
+  ansible.builtin.file:
+    path: "{{ backup_destination_dir }}"
+    state: directory
+    mode: "0750"
+    owner: "{{ support_user }}"
+    group: "{{ support_user }}"
+  when: backup_jobs | length > 0
+
+- name: Gerar script de backup
+  ansible.builtin.template:
+    src: backup.sh.j2
+    dest: /usr/local/bin/papermoon-platform-backup.sh
+    mode: "0750"
+  when: backup_jobs | length > 0
+
+- name: Agendar backup diário via cron (03:00)
+  ansible.builtin.cron:
+    name: "papermoon-platform backup"
+    hour: "3"
+    minute: "0"
+    user: "{{ support_user }}"
+    job: "/usr/local/bin/papermoon-platform-backup.sh >> {{ backup_destination_dir }}/backup.log 2>&1"
+  when: backup_jobs | length > 0
+
+- name: Remover script/cron de backup em hosts sem backup_jobs definido
+  ansible.builtin.cron:
+    name: "papermoon-platform backup"
+    state: absent
+    user: "{{ support_user }}"
+  when: backup_jobs | length == 0

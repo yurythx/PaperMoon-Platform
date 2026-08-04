@@ -1,0 +1,11 @@
+---
+- name: Deploy Jellyfin
+  hosts: jellyfin
+  roles:
+    - role: docker_app
+      vars:
+        docker_app_name: jellyfin
+        docker_app_compose_src: "{{ playbook_dir }}/../../docker/jellyfin/docker-compose.yml"
+        docker_app_env:
+          TZ: "{{ timezone }}"
+          RENDER_GID: "{{ jellyfin_render_gid }}"

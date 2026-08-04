@@ -1,0 +1,17 @@
+# Copie para terraform.tfvars (gitignored) e preencha com os valores reais
+# do seu ambiente. Nunca commitar o arquivo terraform.tfvars.
+
+pm_api_url      = "https://192.168.1.X:8006/api2/json" # IP/hostname do host Proxmox
+pm_api_token    = "terraform@pve!provider=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" # gerado em bootstrap/02-terraform-user.sh
+pm_tls_insecure = true
+pm_node_name    = "pve" # confirme com 'pvecm status' ou 'hostname' no host
+
+network_gateway = "192.168.1.1"
+
+# Confirme o volid exato com 'pveam list local' no host após rodar
+# bootstrap/03-lxc-template.sh — o nome muda a cada revisão do template.
+lxc_template_file_id = "local:vztmpl/ubuntu-24.04-standard_24.04-2_amd64.tar.zst"
+
+ssh_public_keys = [
+  "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI... seu-usuario@sua-maquina",
+]

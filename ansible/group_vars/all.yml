@@ -1,0 +1,28 @@
+---
+support_user: suporte
+timezone: "America/Sao_Paulo" # ajuste se o host físico estiver em outro fuso
+
+# Usado como "from" padrão do ufw em portas que só devem ser alcançáveis
+# de dentro de casa (WebUIs) — mais restritivo que deixar "any" (que
+# equivale a liberar pra internet inteira caso a porta seja um dia
+# encaminhada no roteador por engano).
+firewall_lan_cidr: "192.168.1.0/24"
+
+# Mesmas chaves usadas em terraform/environments/production/terraform.tfvars
+# (ssh_public_keys) — mantidas aqui porque Terraform e Ansible não
+# compartilham variáveis entre si nesta arquitetura simples.
+ssh_public_keys:
+  - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI... seu-usuario@sua-maquina"
+
+# Endurecimento de SSH aplicado pela role "common". Deixe true em produção;
+# só desligue temporariamente se precisar depurar acesso.
+harden_ssh: true
+
+# Portas liberadas no ufw (role "firewall"), além de SSH. Cada host
+# sobrescreve em host_vars/<hostname>.yml conforme a stack Docker exposta
+# nele for definida na Fase 3b. Formato:
+#   firewall_allowed_ports:
+#     - { port: 8096, proto: tcp, from: "{{ firewall_lan_cidr }}" }  # só a LAN de casa
+#     - { port: 3306, proto: tcp, from: "192.168.1.120" }            # só esse IP específico
+#     - { port: 6881, proto: tcp }                                    # 'from' omitido = qualquer origem (ex: peers de torrent vindos da internet)
+firewall_allowed_ports: []

@@ -1,0 +1,12 @@
+---
+# PLACEHOLDER — preencha após criar o túnel de verdade (ver
+# docker/cloudflare-tunnel/README.md), depois criptografe:
+#   ansible-vault encrypt host_vars/cloudflare-tunnel.yml
+cloudflare_tunnel_id: "CHANGE_ME_TUNNEL_ID"
+
+cloudflare_tunnel_ingress:
+  - { hostname: "app.papermoon.cloud", service: "http://192.168.1.102:3000" }
+  - { hostname: "webhooks.papermoon.cloud", service: "http://192.168.1.102:8000" }
+
+# cloudflared só faz conexões de saída — nenhuma porta de entrada necessária.
+firewall_allowed_ports: []

@@ -1,0 +1,10 @@
+---
+- name: Deploy Redis (Nextcloud)
+  hosts: nextcloud-redis
+  roles:
+    - role: docker_app
+      vars:
+        docker_app_name: nextcloud-redis
+        docker_app_compose_src: "{{ playbook_dir }}/../../docker/nextcloud-redis/docker-compose.yml"
+        docker_app_env:
+          REDIS_PASSWORD: "{{ redis_password }}"

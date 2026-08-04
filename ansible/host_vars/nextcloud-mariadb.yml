@@ -1,0 +1,15 @@
+---
+# PLACEHOLDER — substitua os valores abaixo e criptografe este arquivo antes
+# de usar em produção:
+#   ansible-vault encrypt host_vars/nextcloud-mariadb.yml
+mariadb_root_password: "CHANGE_ME_ROOT_PASSWORD"
+mariadb_database: nextcloud
+mariadb_user: nextcloud
+mariadb_password: "CHANGE_ME_APP_PASSWORD"
+
+# Só o container do Nextcloud pode alcançar a porta do banco.
+firewall_allowed_ports:
+  - { port: 3306, proto: tcp, from: "192.168.1.120" }
+
+backup_jobs:
+  - { name: nextcloud-db, type: mariadb, container: nextcloud-mariadb, user: "{{ mariadb_user }}", password: "{{ mariadb_password }}", database: "{{ mariadb_database }}" }

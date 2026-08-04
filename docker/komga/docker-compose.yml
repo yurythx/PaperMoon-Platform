@@ -1,0 +1,21 @@
+services:
+  komga:
+    image: gotson/komga:latest
+    container_name: komga
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ}
+      SERVER_PORT: ${SERVER_PORT}
+    volumes:
+      - komga_config:/config
+      - /data/manga-1:/data/manga-1:ro
+      - /data/manga-2:/data/manga-2:ro
+      - /data/comics-1:/data/comics-1:ro
+      - /data/comics-2:/data/comics-2:ro
+      - /data/ebooks-1:/data/ebooks-1:ro
+      - /data/ebooks-2:/data/ebooks-2:ro
+    ports:
+      - "${SERVER_PORT}:${SERVER_PORT}"
+
+volumes:
+  komga_config:

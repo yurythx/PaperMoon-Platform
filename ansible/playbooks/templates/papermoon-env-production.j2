@@ -1,0 +1,79 @@
+{# Gerado pelo Ansible SÓ NA PRIMEIRA VEZ (ver deploy-papermoon.yml) — depois
+   desta primeira geração, o deploy.sh do próprio PaperMoon assume o controle
+   deste arquivo (ex: grava as chaves JWT geradas automaticamente). Rodar o
+   Ansible de novo NÃO sobrescreve este arquivo, para não apagar o que o
+   deploy.sh já escreveu. #}
+
+POSTGRES_DB=papermoon
+POSTGRES_USER=papermoon
+POSTGRES_PASSWORD={{ papermoon_postgres_password }}
+DATABASE_URL=postgres://papermoon:{{ papermoon_postgres_password }}@postgres:5432/papermoon
+
+REDIS_PASSWORD={{ papermoon_redis_password }}
+REDIS_URL=redis://:{{ papermoon_redis_password }}@redis:6379/0
+
+SECRET_KEY={{ papermoon_secret_key }}
+DEBUG=False
+ALLOWED_HOSTS={{ papermoon_allowed_hosts }}
+CORS_ALLOWED_ORIGINS={{ papermoon_cors_allowed_origins }}
+
+# Deixe em branco — deploy.sh detecta e gera automaticamente na primeira execução.
+JWT_PRIVATE_KEY=
+JWT_PUBLIC_KEY=
+
+FRONTEND_URL={{ papermoon_frontend_url }}
+NEXTJS_INTERNAL_URL=http://nextjs:3000
+NEXT_PUBLIC_SITE_URL={{ papermoon_frontend_url }}
+
+EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
+EMAIL_HOST={{ papermoon_email_host }}
+EMAIL_PORT={{ papermoon_email_port }}
+EMAIL_USE_TLS=True
+EMAIL_HOST_USER={{ papermoon_email_host_user }}
+EMAIL_HOST_PASSWORD={{ papermoon_email_host_password }}
+DEFAULT_FROM_EMAIL={{ papermoon_default_from_email }}
+ADMIN_NOTIFICATION_EMAIL={{ papermoon_admin_notification_email }}
+
+ASAAS_API_KEY={{ papermoon_asaas_api_key }}
+ASAAS_WEBHOOK_TOKEN={{ papermoon_asaas_webhook_token }}
+
+FLOWER_USER={{ papermoon_flower_user }}
+FLOWER_PASSWORD={{ papermoon_flower_password }}
+
+REVALIDATE_SECRET={{ papermoon_revalidate_secret }}
+
+# Bloco opcional — backup (Fase 4). Padrão vazio funciona sem preencher.
+BACKUP_DIR=
+DAILY_RETENTION=7
+WEEKLY_RETENTION=28
+MONTHLY_RETENTION=90
+BACKUP_RCLONE_REMOTE=
+
+# Bloco opcional — Sentry (recomendado, mas não obrigatório para subir).
+SENTRY_DSN={{ papermoon_sentry_dsn | default('') }}
+NEXT_PUBLIC_SENTRY_DSN={{ papermoon_sentry_dsn | default('') }}
+SENTRY_ORG=
+SENTRY_PROJECT=
+SENTRY_AUTH_TOKEN=
+
+# Bloco opcional — integrações externas. Em branco = graceful fallback (log-only).
+CHATWOOT_API_URL=https://app.chatwoot.com
+CHATWOOT_API_KEY=
+N8N_API_URL=
+N8N_API_KEY=
+META_WHATSAPP_TOKEN=
+META_WABA_ID=
+GLPI_API_URL=
+GLPI_APP_TOKEN=
+GLPI_USER_TOKEN=
+ZABBIX_API_URL=
+ZABBIX_API_TOKEN=
+TRUENAS_API_URL=
+TRUENAS_API_KEY=
+TRUENAS_POOL=data
+RUSTDESK_API_URL=
+RUSTDESK_API_KEY=
+WINDOWS_SERVER_WAC_URL=
+WINDOWS_SERVER_WAC_KEY=
+SAMBA_API_URL=
+SAMBA_API_KEY=

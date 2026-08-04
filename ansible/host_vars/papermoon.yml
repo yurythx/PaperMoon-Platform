@@ -1,0 +1,45 @@
+---
+# PLACEHOLDER — substitua os valores abaixo (comandos de geração no comentário
+# de cada campo) e criptografe antes de produção:
+#   ansible-vault encrypt host_vars/papermoon.yml
+#
+# Domínio ainda não confirmado — "papermoon.cloud" é o placeholder já usado
+# no .env.production.example original. Ajuste para o domínio real e mantenha
+# consistente com ansible/host_vars/cloudflare-tunnel.yml.
+
+papermoon_postgres_password: "CHANGE_ME"       # openssl rand -base64 32
+papermoon_redis_password: "CHANGE_ME"          # openssl rand -base64 24
+papermoon_secret_key: "CHANGE_ME"              # python3 -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+
+papermoon_allowed_hosts: "app.papermoon.cloud,webhooks.papermoon.cloud,django-api"
+papermoon_cors_allowed_origins: "https://app.papermoon.cloud"
+papermoon_frontend_url: "https://app.papermoon.cloud"
+
+papermoon_email_host: "smtp.sendgrid.net"
+papermoon_email_port: 587
+papermoon_email_host_user: "apikey"
+papermoon_email_host_password: "CHANGE_ME"
+papermoon_default_from_email: "PaperMoon <noreply@papermoon.cloud>"
+papermoon_admin_notification_email: "admin@papermoon.cloud"
+
+papermoon_asaas_api_key: "CHANGE_ME"           # $aact_... — Asaas > Configurações > Integrações > API Keys
+papermoon_asaas_webhook_token: "CHANGE_ME"     # openssl rand -hex 32 — cadastrar o mesmo valor no Asaas
+
+papermoon_flower_user: admin
+papermoon_flower_password: "CHANGE_ME"         # openssl rand -base64 16
+
+papermoon_revalidate_secret: "CHANGE_ME"       # openssl rand -base64 32
+
+papermoon_sentry_dsn: ""                        # opcional
+
+# Backup diário (03:00) — dado de negócio real (clientes, faturas), prioridade máxima.
+# Nomes de volume assumem que o projeto Compose se chama "papermoon" (nome do
+# diretório) — confirme com 'docker volume ls' no host antes de confiar 100%.
+backup_jobs:
+  - { name: papermoon-postgres, type: postgres, container: papermoon-postgres, user: papermoon, database: papermoon }
+  - { name: papermoon-media, type: volume, volume: papermoon_papermoon-media }
+
+# Só o Cloudflare Tunnel (101) pode alcançar as portas do app.
+firewall_allowed_ports:
+  - { port: 3000, proto: tcp, from: "192.168.1.101" }
+  - { port: 8000, proto: tcp, from: "192.168.1.101" }

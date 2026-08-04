@@ -1,0 +1,57 @@
+---
+# Instala o node_exporter como binário nativo (systemd), não como container —
+# métricas de host (CPU/RAM/disco do próprio LXC) fazem mais sentido fora do
+# Docker, e evita gastar uma fatia da já apertada RAM em mais um container
+# por host só para isso.
+
+- name: Criar usuário de sistema node_exporter (sem login)
+  ansible.builtin.user:
+    name: node_exporter
+    system: true
+    shell: /usr/sbin/nologin
+    create_home: false
+
+- name: Verificar versão do node_exporter já instalada
+  ansible.builtin.command: /usr/local/bin/node_exporter --version
+  register: node_exporter_installed
+  changed_when: false
+  failed_when: false
+
+- name: Instalar/atualizar o node_exporter
+  when: node_exporter_version not in (node_exporter_installed.stderr | default(''))
+  block:
+    - name: Baixar o tarball do node_exporter
+      ansible.builtin.get_url:
+        url: "https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz"
+        dest: "/tmp/node_exporter.tar.gz"
+        mode: "0644"
+
+    - name: Extrair o binário
+      ansible.builtin.unarchive:
+        src: "/tmp/node_exporter.tar.gz"
+        dest: "/tmp"
+        remote_src: true
+
+    - name: Instalar o binário em /usr/local/bin
+      ansible.builtin.copy:
+        src: "/tmp/node_exporter-{{ node_exporter_version }}.linux-amd64/node_exporter"
+        dest: /usr/local/bin/node_exporter
+        mode: "0755"
+        owner: root
+        group: root
+        remote_src: true
+      notify: Reiniciar node_exporter
+
+- name: Instalar unit systemd
+  ansible.builtin.template:
+    src: node_exporter.service.j2
+    dest: /etc/systemd/system/node_exporter.service
+    mode: "0644"
+  notify: Reiniciar node_exporter
+
+- name: Habilitar e iniciar o node_exporter
+  ansible.builtin.systemd:
+    name: node_exporter
+    enabled: true
+    state: started
+    daemon_reload: true

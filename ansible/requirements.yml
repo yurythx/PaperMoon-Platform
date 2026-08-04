@@ -1,0 +1,5 @@
+---
+collections:
+  - name: community.general   # módulo timezone
+  - name: community.docker    # módulo docker_compose_v2 (role docker_app)
+  - name: ansible.posix       # módulo authorized_key

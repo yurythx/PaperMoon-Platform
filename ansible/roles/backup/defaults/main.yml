@@ -1,0 +1,9 @@
+---
+backup_jobs: []
+
+# PLACEHOLDER — destino ainda não decidido (NFS dedicado vs disco local vs
+# outro host). Local por enquanto: protege contra erro humano/corrupção de
+# app, mas NÃO contra falha do disco do próprio LXC. Trocar aqui quando
+# decidido — nenhum outro arquivo precisa mudar.
+backup_destination_dir: "/opt/backups"
+backup_retention_days: 7

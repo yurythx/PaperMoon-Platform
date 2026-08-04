@@ -1,0 +1,18 @@
+---
+# PLACEHOLDER — substitua e criptografe com:
+#   ansible-vault encrypt host_vars/vaultwarden.yml
+# ADMIN_TOKEN deve ser um hash Argon2 real — ver docker/vaultwarden/README.md
+# (gerar com 'docker run --rm -it vaultwarden/server /vaultwarden hash').
+vaultwarden_domain: "http://192.168.1.123:8222"
+vaultwarden_admin_token: "CHANGE_ME_ARGON2_HASH"
+vaultwarden_signups_allowed: false
+vaultwarden_port: 8222
+
+firewall_allowed_ports:
+  - { port: 8222, proto: tcp, from: "{{ firewall_lan_cidr }}" }
+
+# Prioridade máxima de backup — é o único app aqui onde perder dados
+# significa perder senhas de verdade. Nome de volume assume projeto Compose
+# "vaultwarden" — confirme com 'docker volume ls' no host antes de confiar 100%.
+backup_jobs:
+  - { name: vaultwarden-data, type: volume, volume: vaultwarden_vaultwarden_data }

@@ -1,0 +1,41 @@
+---
+# IPs devem bater com terraform/environments/production/containers.tf
+# (conferir com 'terraform output inventory' após o apply da Fase 2).
+#
+# ansible_user aponta para "suporte" por padrão — mas esse usuário só existe
+# DEPOIS da primeira execução da role "common". Num host recém-criado pelo
+# Terraform, rode a primeira vez com:
+#   ansible-playbook playbooks/site.yml -e ansible_user=root
+# Da segunda execução em diante, o padrão deste inventário já funciona.
+
+all:
+  vars:
+    ansible_user: suporte
+    ansible_become: true
+  children:
+    docker_hosts:
+      hosts:
+        cloudflare-tunnel:
+          ansible_host: 192.168.1.101
+        papermoon:
+          ansible_host: 192.168.1.102
+        jellyfin:
+          ansible_host: 192.168.1.110
+        komga:
+          ansible_host: 192.168.1.111
+        qbittorrent:
+          ansible_host: 192.168.1.112
+        navidrome:
+          ansible_host: 192.168.1.113
+        nextcloud:
+          ansible_host: 192.168.1.120
+        nextcloud-mariadb:
+          ansible_host: 192.168.1.121
+        nextcloud-redis:
+          ansible_host: 192.168.1.122
+        vaultwarden:
+          ansible_host: 192.168.1.123
+        grafana:
+          ansible_host: 192.168.1.130
+        prometheus:
+          ansible_host: 192.168.1.131
