@@ -26,19 +26,25 @@ quem pode alcançar essa porta — ver `from` em `firewall_allowed_ports`.
 
 ## Stacks entregues
 
+**Todas as linhas abaixo (exceto `cloudflare-tunnel`) foram implantadas e
+verificadas de verdade no host real (`pve1`) em 2026-08-04** — não é só
+código nunca testado. Ver `docs/go-live-checklist.md` para o relato
+completo dos bugs reais encontrados e corrigidos nesse processo.
+
 | Stack | CT | Status | Observação |
 |---|---|---|---|
-| `nextcloud-mariadb` | 121 | ✅ | Porta 3306 liberada só para 192.168.1.120 (Nextcloud) |
-| `nextcloud-redis` | 122 | ✅ | Porta 6379 liberada só para 192.168.1.120; sem volume (cache) |
-| `nextcloud` | 120 | ✅ | imagem `nextcloud:29-apache`; porta 8080 liberada pra LAN; cron.php agendado via Ansible |
-| `jellyfin` | 110 | ✅ | GPU AMD/VAAPI via `/dev/dri/renderD128`; bibliotecas duplas (dados+dados2) |
-| `komga` | 111 | ✅ | porta 25600; bibliotecas duplas |
-| `qbittorrent` | 112 | ✅ | porta 6881 aberta pra internet (peers) — precisa port-forward no roteador |
-| `navidrome` | 113 | ✅ | `ND_MUSICFOLDER` único com 2 subpastas montadas (dados+dados2) |
-| `vaultwarden` | 123 | ✅ | `ADMIN_TOKEN` precisa ser hash Argon2 real, gerado manualmente antes do deploy |
-| `prometheus` | 131 | ✅ | só auto-monitoramento por enquanto; frota completa fica pra Fase 4 (node_exporter) |
-| `grafana` | 130 | ✅ | datasource do Prometheus provisionado automaticamente |
-| `cloudflare-tunnel` | 101 | ✅ | `config.yml` renderizado via Jinja2 a partir de `host_vars/cloudflare-tunnel.yml`; credenciais reais ainda são placeholder |
+| `nextcloud-mariadb` | 121 | ✅ testado | Porta 3306 liberada só para 192.168.1.120 (Nextcloud) |
+| `nextcloud-redis` | 122 | ✅ testado | Porta 6379 liberada só para 192.168.1.120; sem volume (cache) |
+| `nextcloud` | 120 | ✅ testado | `nextcloud:29-apache`; HTTP 302 confirmado; cron.php agendado via Ansible |
+| `jellyfin` | 110 | ✅ testado | GPU AMD/VAAPI via `/dev/dri/renderD128`; container `healthy`; bibliotecas duplas (dados+dados2) |
+| `komga` | 111 | ✅ testado | porta 25600, HTTP 200 confirmado |
+| `qbittorrent` | 112 | ✅ testado | HTTP 200 confirmado; porta 6881 aberta pra internet (peers) — precisa port-forward no roteador |
+| `navidrome` | 113 | ✅ testado | `ND_MUSICFOLDER` único com 2 subpastas montadas (dados+dados2) |
+| `vaultwarden` | 123 | ✅ testado | `ADMIN_TOKEN` com hash Argon2 real; painel `/admin` HTTP 200 confirmado |
+| `prometheus` | 131 | ✅ testado | `/-/healthy` confirmado; scrape de todos os 12 hosts via node_exporter (Fase 4) |
+| `grafana` | 130 | ✅ testado | datasource do Prometheus confirmado via API (`/api/datasources`) |
+| `papermoon` | 102 | ✅ testado | `deploy.sh` rodou ponta a ponta (build+migrate+health-check); 7 containers `healthy`; portas 3000/8000 publicadas e restritas via ufw ao IP do Cloudflare Tunnel. **SMTP/Asaas ainda são placeholder** — preencher antes de depender de e-mail/cobrança reais |
+| `cloudflare-tunnel` | 101 | ⏳ pendente | LXC existe (Terraform), mas o compose não foi subido — exige túnel real criado na sua conta Cloudflare primeiro (`docker/cloudflare-tunnel/README.md`). Sem isso o container só ficaria em crash-loop com credenciais falsas |
 | `papermoon` | 102 | ✅ | não usa a role `docker_app` genérica — reaproveita o `deploy.sh` próprio do app (git pull + build + migrate + health-check + rollback) |
 
 ### Resolvido: rede entre `cloudflare-tunnel` e `papermoon`
