@@ -26,7 +26,11 @@ TF_USER_FULL="${TF_PVE_USER}@${TF_PVE_REALM}"
 # discos e mount points via Terraform (válido tanto para o provider
 # bpg/proxmox quanto Telmate/proxmox — a escolha do provider é decisão da
 # Fase 2, este role é deliberadamente um superconjunto seguro para ambos).
-ROLE_PRIVS="Datastore.AllocateSpace,Datastore.Audit,Pool.Allocate,Sys.Audit,Sys.Console,Sys.Modify,VM.Allocate,VM.Audit,VM.Clone,VM.Config.CDROM,VM.Config.Cloudinit,VM.Config.CPU,VM.Config.Disk,VM.Config.HWType,VM.Config.Memory,VM.Config.Network,VM.Config.Options,VM.Migrate,VM.Monitor,VM.PowerMgmt,SDN.Use"
+#
+# "Sys.Modify" e "VM.Monitor" existiam em versões antigas do Proxmox, mas
+# não são mais privilégios válidos no Proxmox VE 9 (confirmado no host real,
+# pve1 — nem o role builtin PVEAdmin os tem mais). Removidos daqui.
+ROLE_PRIVS="Datastore.AllocateSpace,Datastore.Audit,Pool.Allocate,Sys.Audit,Sys.Console,VM.Allocate,VM.Audit,VM.Clone,VM.Config.CDROM,VM.Config.Cloudinit,VM.Config.CPU,VM.Config.Disk,VM.Config.HWType,VM.Config.Memory,VM.Config.Network,VM.Config.Options,VM.Migrate,VM.PowerMgmt,SDN.Use"
 
 # --- 1. Role ---
 if pveum role list --output-format json | grep -q "\"roleid\":\"${TF_PVE_ROLE}\""; then
