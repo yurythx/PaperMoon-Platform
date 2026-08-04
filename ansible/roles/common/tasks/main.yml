@@ -19,9 +19,17 @@
       - unattended-upgrades
     state: present
 
+# community.general.timezone quebra em ansible-core 2.19 ("Finalization of
+# task args ... is undefined", reproduzido contra o host real independente
+# do nome da variável) — usa timedatectl direto em vez do módulo.
+- name: Verificar timezone atual
+  ansible.builtin.command: timedatectl show --property=Timezone --value
+  register: current_timezone
+  changed_when: false
+
 - name: Definir timezone
-  community.general.timezone:
-    name: "{{ system_timezone }}"
+  ansible.builtin.command: "timedatectl set-timezone {{ system_timezone }}"
+  when: current_timezone.stdout != system_timezone
 
 # --- Atualizações automáticas de segurança (Fase 4) ---
 # Patches de segurança são aplicados sozinhos; reboot (raro — só
