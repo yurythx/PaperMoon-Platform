@@ -16,11 +16,19 @@
     group: "{{ support_user }}"
   when: backup_jobs | length > 0
 
+# Dono = suporte (não root) e 0700 (não 0750): o cron abaixo roda como
+# suporte, então precisa poder executar o próprio arquivo — e como o script
+# embute a senha do MariaDB em texto puro (job tipo 'mariadb'), 0700 sem
+# nenhum acesso de grupo/outros evita expor isso a outros usuários locais.
+# Bug real: gerado antes como root:root 0750, cron falhava com "permission
+# denied" todo santo dia às 3h, silenciosamente (nenhum backup rodou).
 - name: Gerar script de backup
   ansible.builtin.template:
     src: backup.sh.j2
     dest: /usr/local/bin/papermoon-platform-backup.sh
-    mode: "0750"
+    mode: "0700"
+    owner: "{{ support_user }}"
+    group: "{{ support_user }}"
   when: backup_jobs | length > 0
 
 - name: Agendar backup diário via cron (03:00)
