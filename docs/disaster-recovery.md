@@ -25,6 +25,15 @@ Pressupõe que você tem: um Proxmox novo instalado, o storage NFS
    ```bash
    cd ansible
    ansible-galaxy install -r requirements.yml
+
+   # OBRIGATÓRIO antes de qualquer ansible-playbook: sem isso, todo
+   # host_vars/group_vars com segredo real (senhas, tokens) está
+   # criptografado e ilegível. Restaure a senha do vault do seu password
+   # manager — não existe "recuperar" se essa senha também foi perdida
+   # junto com o host antigo (ver docs/ansible.md, seção "Segredos via
+   # Ansible Vault").
+   echo 'SENHA_DO_VAULT_AQUI' > .vault_pass && chmod 600 .vault_pass
+
    ansible-playbook site.yml -e ansible_user=root   # hosts novos, usuário suporte ainda não existe
    ```
    Aplica `common` (usuário suporte, SSH, timezone, unattended-upgrades),

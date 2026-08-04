@@ -117,11 +117,25 @@ enable`, para nunca haver risco de travar o próprio acesso SSH.
 
 ### Segredos via Ansible Vault
 
-`host_vars/<app>.yml` com credenciais (senha do MariaDB, token do
-Vaultwarden, etc.) deve ser criptografado com `ansible-vault encrypt`. A
-senha do vault fica em `.vault_pass` (fora do Git, `.gitignore` já cobre) e
-é referenciada em `ansible.cfg` (`vault_password_file`, comentado até a
-Fase 3b criar o primeiro segredo).
+Todo `host_vars/<app>.yml`/`group_vars/all.yml` com credencial real (senha
+do MariaDB, token do Vaultwarden, hash de senha do `suporte`, etc.) está
+criptografado com `ansible-vault encrypt`. A senha do vault fica em
+`ansible/.vault_pass` — **só existe no controlador** (o host Proxmox),
+nunca no Git (`.gitignore` cobre `vault_pass*` e `.vault_pass*`), e é
+referenciada em `ansible.cfg` (`vault_password_file`). Com isso configurado,
+`ansible-playbook` decifra tudo de forma transparente — nenhum comando
+precisa de `--ask-vault-pass`.
+
+**Risco de ponto único de falha:** `.vault_pass` é a única chave que decifra
+todo segredo da plataforma. Se o disco do controlador for perdido sem essa
+senha salva em outro lugar, os arquivos criptografados no Git tornam-se
+permanentemente irrecuperáveis — não existe "esqueci a senha" aqui. Guarde
+uma cópia da senha gerada num password manager assim que ela for criada (ver
+`docs/disaster-recovery.md`).
+
+Arquivo novo com segredo → `ansible-vault encrypt host_vars/<app>.yml`.
+Editar um já criptografado → `ansible-vault edit host_vars/<app>.yml` (usa
+`vault_password_file` automaticamente, não pede senha na mão).
 
 ### Role `docker_app` genérica
 
