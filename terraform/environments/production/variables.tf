@@ -3,10 +3,16 @@ variable "pm_api_url" {
   description = "Endpoint da API do Proxmox, ex: https://192.168.1.x:8006/api2/json"
 }
 
-variable "pm_api_token" {
+variable "pm_pam_username" {
+  type        = string
+  default     = "root@pam"
+  description = "Precisa ser literalmente root@pam (ticket-auth) — bind mounts, device_passthrough e feature flags custom só são permitidos para essa identidade exata no Proxmox. Ver comentário em main.tf."
+}
+
+variable "pm_pam_password" {
   type        = string
   sensitive   = true
-  description = "Token gerado em bootstrap/02-terraform-user.sh, formato terraform@pve!provider=<secret>"
+  description = "Senha do root@pam. Considere usar uma senha dedicada/rotacionada só para automação, já que api_token não serve para as operações deste projeto."
 }
 
 variable "pm_tls_insecure" {
