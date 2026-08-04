@@ -54,6 +54,23 @@ apareceu na primeira execução real porque não há como isso ser pego por
 `--syntax-check` ou validação de YAML — é puramente sobre onde o Ansible
 procura essas pastas em tempo de execução.
 
+**Nota honesta sobre o processo de debug:** no caminho até achar essa causa
+real, chegamos a suspeitar (e "corrigir") coisas que não eram o problema —
+renomear a variável `timezone`, trocar o módulo `community.general.timezone`
+por `timedatectl`, e até trocar `ansible-core` 2.19 por 2.17 via venv. Nenhuma
+dessas era a causa raiz (o erro persistiu idêntico em todas), mas não são
+mudanças ruins por si só — `timedatectl` é mais simples que o módulo, e
+`ansible-core` 2.17 é uma versão mais madura que a 2.19 (lançada há pouco
+tempo) — então ficaram. Mas o bug de verdade era só a localização das pastas.
+
+### Control node: o próprio Proxmox
+
+Terraform e Ansible rodam diretamente no host Proxmox (`pve1`), não numa
+máquina separada — evita o problema de Ansible não rodar nativamente no
+Windows, e o host já tem acesso de rede a tudo que precisa gerenciar.
+`ansible-core` fica isolado num venv (`/root/ansible-venv`) para não brigar
+com nenhum pacote Python do próprio sistema Proxmox.
+
 ### Inventário estático
 
 Ver decisão já registrada na proposta de arquitetura: os IPs são fixos
