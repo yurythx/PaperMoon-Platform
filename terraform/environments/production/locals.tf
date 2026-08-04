@@ -1,10 +1,13 @@
 locals {
-  # IDs dos storages NFS registrados em bootstrap/01-nfs-storage.sh.
-  # dados e dados2 são dois pools independentes (conteúdo diferente, não
-  # réplica um do outro) — por isso os apps de mídia recebem bind mounts
-  # dos dois, como bibliotecas separadas (ver docs/terraform.md).
-  dados_path  = "/mnt/pve/pve-dados"
-  dados2_path = "/mnt/pve/pve-dados2"
+  # IDs reais dos storages NFS neste host (pve1) — já existiam antes deste
+  # projeto, registrados como "TrueNAS-NFS"/"TrueNAS-NFS2" (não "pve-dados"
+  # como um rascunho anterior deste arquivo assumia). Confirmado via
+  # 'cat /etc/pve/storage.cfg' no host real. São dois pools independentes
+  # (conteúdo diferente, não réplica um do outro) — por isso os apps de
+  # mídia recebem bind mounts dos dois, como bibliotecas separadas (ver
+  # docs/terraform.md).
+  dados_path  = "/mnt/pve/TrueNAS-NFS"
+  dados2_path = "/mnt/pve/TrueNAS-NFS2"
 
   media_categories = ["movies", "series", "anime", "photos"]
   book_categories  = ["manga", "comics", "ebooks"]

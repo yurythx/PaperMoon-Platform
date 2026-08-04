@@ -21,7 +21,7 @@ auditável como o resto da plataforma.
 
 | Script | O que faz | Por quê |
 |---|---|---|
-| `01-nfs-storage.sh` | Registra `dados` e `dados2` (192.168.1.14) como storages NFS no Proxmox (`pvesm add nfs`), montados em `/mnt/pve/pve-dados` e `/mnt/pve/pve-dados2` | Base para os bind mounts (`mp0`, `mp1`) que o Terraform vai declarar em cada LXC na Fase 2 |
+| `01-nfs-storage.sh` | Registra os pools NFS (192.168.1.14) como storage no Proxmox (`pvesm add nfs`) e garante a estrutura `media/books/downloads` dentro de cada um. No host real (`pve1`) já existiam como `TrueNAS-NFS`/`TrueNAS-NFS2`, montados em `/mnt/pve/TrueNAS-NFS` e `/mnt/pve/TrueNAS-NFS2` (exports `/mnt/Pool_HD1/Dados` e `/mnt/Pool_HD2/Dados2`) — o script detectou e só criou a estrutura de pastas, que não existia ainda | Base para os bind mounts (`mp0`, `mp1`) que o Terraform declara em cada LXC na Fase 2 |
 | `02-terraform-user.sh` | Cria `terraform@pve` (realm nativo do Proxmox, sem login Linux), uma role customizada com privilégios mínimos, e um token de API | Terraform nunca usa `root@pam` — segue o princípio de segurança/menor privilégio |
 | `03-lxc-template.sh` | Baixa o template Ubuntu Server 24.04 LTS para o storage `local` | Template base padronizado que todo módulo Terraform de LXC vai reutilizar |
 | `04-tailscale.sh` | Instala e conecta o Tailscale no host Proxmox | Acesso administrativo remoto seguro à web UI (porta 8006) e SSH, sem expor o Proxmox à internet |
@@ -86,7 +86,7 @@ Ver [`bootstrap/README.md`](../bootstrap/README.md) para os comandos exatos.
 ## Verificação pós-bootstrap
 
 ```bash
-pvesm status                                   # deve listar pve-dados e pve-dados2
+pvesm status                                   # deve listar TrueNAS-NFS e TrueNAS-NFS2
 pveum user list                                # deve listar terraform@pve
 pveum user token list terraform@pve            # deve listar o token 'provider'
 pveam list local | grep ubuntu-24.04           # template disponível
@@ -96,5 +96,5 @@ tailscale status                               # host conectado à tailnet
 ## Próximo passo
 
 Com o host pronto, a Fase 2 (Terraform) usa o token gerado aqui como
-credencial de provider e os storages `pve-dados`/`pve-dados2` como origem
-dos bind mounts de cada LXC.
+credencial de provider e os storages `TrueNAS-NFS`/`TrueNAS-NFS2` como
+origem dos bind mounts de cada LXC.

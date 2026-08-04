@@ -79,7 +79,10 @@ enxuta (ver `docs/terraform.md` para a tabela de `cores`/`memory_mb` por
 container e o racional) — não alocar RAM "confortável" sem checar o
 orçamento total primeiro.
 
-**Storage NFS:** `192.168.1.14`, compartilhamentos `dados` e `dados2` (estrutura idêntica):
+**Storage NFS:** TrueNAS em `192.168.1.14`, dois pools (TrueNAS-NFS →
+`/mnt/Pool_HD1/Dados`, TrueNAS-NFS2 → `/mnt/Pool_HD2/Dados2`), registrados
+no Proxmox com esses mesmos nomes de storage. Estrutura (idêntica nos
+dois, criada por `bootstrap/01-nfs-storage.sh`):
 
 ```
 media/{movies,series,anime,music,photos}

@@ -3,9 +3,14 @@
 # vars.sh é lido (source) por todos os scripts numerados deste diretório.
 
 # --- NFS ---
+# Valores reais confirmados no host (pve1) via 'cat /etc/pve/storage.cfg' —
+# os dois pools do TrueNAS usam paths de export diferentes entre si, sem
+# padrão comum, por isso é um mapa explícito em vez de um prefixo + lista.
 NFS_SERVER="192.168.1.14"
-NFS_SHARES=("dados" "dados2")          # vira o storage ID no Proxmox (pve-dados, pve-dados2)
-NFS_STORAGE_PREFIX="pve-"
+declare -A NFS_MOUNTS=(
+  ["TrueNAS-NFS"]="/mnt/Pool_HD1/Dados"
+  ["TrueNAS-NFS2"]="/mnt/Pool_HD2/Dados2"
+)
 
 # --- Terraform service account (Proxmox) ---
 TF_PVE_USER="terraform"
