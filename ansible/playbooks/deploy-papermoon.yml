@@ -1,32 +1,41 @@
 ---
-# Diferente de todos os outros apps: NÃO usa a role genérica "docker_app".
-# O PaperMoon já tem seu próprio deploy.sh (git pull + build + migrate +
-# collectstatic + health-check + rollback automático) — reaproveitar isso é
-# melhor do que reimplementar a mesma lógica em Ansible, e respeita a regra
-# de não modificar o código/ferramental da aplicação.
+# Deploy 100% declarativo do PaperMoon — sem depender do deploy.sh do
+# próprio app. Cada etapa é uma task Ansible idempotente (módulos
+# community.docker.docker_compose_v2 para o ciclo de vida dos containers;
+# 'docker compose run --rm' via command apenas para os comandos pontuais de
+# management do Django, que não têm módulo dedicado — não é um script
+# solto no servidor, é uma task versionada aqui no repo).
+#
+# Sequência (mesma ordem segura do deploy.sh original, só que via Ansible):
+#   git pull -> build das imagens -> chaves JWT (1x) -> sobe banco/cache ->
+#   migrate -> collectstatic -> sobe o resto -> limpa imagens órfãs.
 - name: Deploy PaperMoon
   hosts: papermoon
   vars:
     papermoon_dir: /opt/docker/papermoon
+    # Escalares para os comandos manuais (docker compose run/build) e listas
+    # (mesmo conteúdo) para os parâmetros files/env_files do módulo
+    # docker_compose_v2, que espera listas mesmo havendo um único arquivo.
+    papermoon_compose_file: docker-compose.prod.yml
+    papermoon_env_file: .env.production
+    papermoon_compose_files:
+      - "{{ papermoon_compose_file }}"
+    papermoon_env_files:
+      - "{{ papermoon_env_file }}"
 
   tasks:
-    - name: Instalar git (necessário para o deploy.sh)
+    - name: Instalar git (necessário para o módulo git)
       ansible.builtin.apt:
         name: git
         state: present
 
-    # /opt é raiz-only; sem isso o clone (rodando como suporte) falha com
-    # "Permission denied" tentando criar /opt/docker/papermoon.
+    # /opt é raiz-only; sem isso o clone (rodando como suporte) falha.
     - name: Garantir /opt/docker
       ansible.builtin.file:
         path: /opt/docker
         state: directory
         mode: "0755"
 
-    # /opt/docker é root:root 0755 (sem write pra group/other) — suporte não
-    # consegue criar a subpasta "papermoon" ali sozinho. Cria como root e já
-    # entrega dona pra suporte, então o clone (rodando como suporte, dir já
-    # existente e vazio) funciona normalmente.
     - name: Garantir {{ papermoon_dir }}, já pertencendo ao suporte
       ansible.builtin.file:
         path: "{{ papermoon_dir }}"
@@ -35,20 +44,14 @@
         owner: "{{ support_user }}"
         group: "{{ support_user }}"
 
-    - name: Clonar o repositório do PaperMoon (só na primeira vez — deploy.sh cuida do 'git pull' depois)
+    - name: Atualizar o repositório do PaperMoon (git pull idempotente)
       ansible.builtin.git:
         repo: "https://github.com/yurythx/papermoon.git"
         dest: "{{ papermoon_dir }}"
         version: main
-        update: false
+        force: false
       become_user: "{{ support_user }}"
-
-    - name: Garantir que o diretório pertence ao usuário de suporte
-      ansible.builtin.file:
-        path: "{{ papermoon_dir }}"
-        owner: "{{ support_user }}"
-        group: "{{ support_user }}"
-        recurse: true
+      register: papermoon_git
 
     - name: Verificar se .env.production já existe
       ansible.builtin.stat:
@@ -64,18 +67,120 @@
         group: "{{ support_user }}"
       when: not papermoon_env_stat.stat.exists
 
-    # git pull + docker compose build + migrations + collectstatic +
-    # health-check + rollback automático em caso de falha — tudo já
-    # implementado em deploy.sh. Idempotente na prática: rodar de novo sem
-    # mudanças só refaz build/health-check, não quebra nada.
-    - name: Rodar deploy.sh (pull + build + migrate + health-check)
+    # Não há módulo dedicado para "build sem subir" no community.docker —
+    # docker_compose_v2 sempre converge pro estado 'present' (builda E
+    # inicia). Build isolado aqui garante que migrate/collectstatic (mais
+    # abaixo) já rodem contra o código recém-puxado, antes de qualquer
+    # container de aplicação subir.
+    - name: Construir as imagens (backend + frontend)
       ansible.builtin.command:
-        cmd: bash deploy.sh
+        cmd: docker compose -f {{ papermoon_compose_file }} --env-file {{ papermoon_env_file }} build --parallel
         chdir: "{{ papermoon_dir }}"
       become_user: "{{ support_user }}"
-      register: papermoon_deploy
       changed_when: true
 
-    - name: Últimas linhas da saída do deploy
+    - name: Verificar se as chaves JWT RS256 já estão configuradas
+      ansible.builtin.command:
+        cmd: grep -qE '^JWT_PRIVATE_KEY=.+' .env.production
+        chdir: "{{ papermoon_dir }}"
+      register: papermoon_jwt_check
+      changed_when: false
+      failed_when: false
+
+    - name: Gerar e gravar as chaves JWT RS256 (só se ausentes)
+      when: papermoon_jwt_check.rc != 0
+      become_user: "{{ support_user }}"
+      block:
+        - name: Rodar generate_jwt_keys
+          ansible.builtin.command:
+            cmd: >-
+              docker compose -f {{ papermoon_compose_file }} --env-file {{ papermoon_env_file }}
+              run --rm --no-deps -e DJANGO_SETTINGS_MODULE=core.settings.local
+              django-api python manage.py generate_jwt_keys
+            chdir: "{{ papermoon_dir }}"
+          register: papermoon_jwt_output
+          changed_when: true
+
+        - name: Gravar JWT_PRIVATE_KEY em .env.production
+          ansible.builtin.lineinfile:
+            path: "{{ papermoon_dir }}/.env.production"
+            regexp: "^JWT_PRIVATE_KEY="
+            line: "{{ papermoon_jwt_output.stdout_lines | select('match', '^JWT_PRIVATE_KEY=') | first }}"
+
+        - name: Gravar JWT_PUBLIC_KEY em .env.production
+          ansible.builtin.lineinfile:
+            path: "{{ papermoon_dir }}/.env.production"
+            regexp: "^JWT_PUBLIC_KEY="
+            line: "{{ papermoon_jwt_output.stdout_lines | select('match', '^JWT_PUBLIC_KEY=') | first }}"
+
+    - name: Subir Postgres e Redis, aguardando ficarem saudáveis
+      community.docker.docker_compose_v2:
+        project_src: "{{ papermoon_dir }}"
+        files: "{{ papermoon_compose_files }}"
+        env_files: "{{ papermoon_env_files }}"
+        services:
+          - postgres
+          - redis
+        state: present
+        pull: missing
+        wait: true
+        wait_timeout: 120
+      become_user: "{{ support_user }}"
+
+    - name: Rodar migrations do Django
+      ansible.builtin.command:
+        cmd: >-
+          docker compose -f {{ papermoon_compose_file }} --env-file {{ papermoon_env_file }}
+          run --rm --no-deps -e DJANGO_SETTINGS_MODULE=core.settings.production
+          django-api python manage.py migrate --noinput
+        chdir: "{{ papermoon_dir }}"
+      become_user: "{{ support_user }}"
+      changed_when: true
+
+    - name: Coletar arquivos estáticos do Django
+      ansible.builtin.command:
+        cmd: >-
+          docker compose -f {{ papermoon_compose_file }} --env-file {{ papermoon_env_file }}
+          run --rm --no-deps -e DJANGO_SETTINGS_MODULE=core.settings.production
+          django-api python manage.py collectstatic --noinput --clear
+        chdir: "{{ papermoon_dir }}"
+      become_user: "{{ support_user }}"
+      changed_when: true
+
+    - name: Subir a stack completa (API, worker, beat, flower, frontend)
+      community.docker.docker_compose_v2:
+        project_src: "{{ papermoon_dir }}"
+        files: "{{ papermoon_compose_files }}"
+        env_files: "{{ papermoon_env_files }}"
+        state: present
+        remove_orphans: true
+        wait: true
+        wait_timeout: 180
+      become_user: "{{ support_user }}"
+      register: papermoon_up
+
+    - name: Verificar saúde do backend (/health/)
+      ansible.builtin.uri:
+        url: "http://localhost:8000/health/"
+        headers:
+          Host: django-api
+        status_code: 200
+      register: papermoon_health
+      retries: 10
+      delay: 6
+      until: papermoon_health.status == 200
+
+    # --volumes NUNCA aqui — apagaria dados de containers já removidos
+    # (ex: um volume órfão de um serviço renomeado), não é isso que
+    # "limpeza segura" significa.
+    - name: Limpar imagens Docker órfãs (sem tocar em volumes)
+      ansible.builtin.command:
+        cmd: docker image prune -f --filter "until=72h"
+      changed_when: true
+
+    - name: Resumo do deploy
       ansible.builtin.debug:
-        msg: "{{ papermoon_deploy.stdout_lines[-15:] }}"
+        msg:
+          - "Commit atualizado: {{ papermoon_git.before | default('N/A') }} -> {{ papermoon_git.after }}"
+          - "Serviços: {{ papermoon_up.containers | default([]) | map(attribute='Service') | list }}"
+          - "Health check: {{ papermoon_health.status }}"
