@@ -17,6 +17,24 @@ docker run --rm -it vaultwarden/server /vaultwarden hash
 Cole a senha quando solicitado, copie o hash gerado (começa com `$argon2...`)
 para `ADMIN_TOKEN` no `.env` real (nunca no `.env.example`).
 
+**Se `docker run -it` não tiver TTY disponível** (ex: rodando de dentro de
+um `pct exec` remoto sem alocar pseudo-terminal), o binário do Vaultwarden
+falha tentando ler `/dev/tty` diretamente. Alternativa que funciona sem
+TTY: o CLI `argon2` (pacote `argon2` no apt) gera um hash PHC argon2id
+equivalente, que o Vaultwarden aceita normalmente (ele só valida o formato
+PHC, não exige que tenha sido gerado pelo binário oficial):
+```bash
+SALT=$(openssl rand -hex 8)
+echo -n "SUA_SENHA" | argon2 "$SALT" -id -t 3 -m 16 -p 4 -l 32 -e
+```
+
+**Escapar `$` como `$$` ao colocar o hash em `ADMIN_TOKEN`** — o Docker
+Compose interpola `$algo` dentro de valores vindos do `.env` como se fosse
+uma variável (`$argon2id`, `$v`, `$m`...), zerando o hash silenciosamente.
+Isso já é tratado automaticamente em
+`ansible/playbooks/deploy-vaultwarden.yml` — só importa se você for testar
+o `docker-compose.yml` manualmente fora do Ansible.
+
 ## `DOMAIN`
 
 Precisa bater exatamente com a URL usada no navegador/app — afeta geração

@@ -9,6 +9,10 @@
         docker_app_env:
           TZ: "{{ system_timezone }}"
           DOMAIN: "{{ vaultwarden_domain }}"
-          ADMIN_TOKEN: "{{ vaultwarden_admin_token }}"
+          # Docker Compose interpola '$' dentro de valores vindos do .env — um
+          # hash Argon2 (formato $argon2id$v=19$...) sem escapar vira lixo
+          # (compose tenta resolver "argon2id"/"v"/"m" como variáveis e
+          # substitui por vazio). '$$' é o escape literal do Compose.
+          ADMIN_TOKEN: "{{ vaultwarden_admin_token | replace('$', '$$') }}"
           SIGNUPS_ALLOWED: "{{ vaultwarden_signups_allowed }}"
           VAULTWARDEN_PORT: "{{ vaultwarden_port }}"
