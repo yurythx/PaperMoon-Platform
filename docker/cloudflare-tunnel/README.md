@@ -4,47 +4,44 @@ Ingress público único de toda a plataforma. Só faz conexões de **saída**
 para a borda da Cloudflare — não precisa de nenhuma porta liberada de
 entrada no `ufw` (nem mesmo para a LAN).
 
-## Como criar o túnel (ação manual, fora deste repositório)
+## Túnel remotely-managed (painel Zero Trust)
 
-Isso exige acesso à sua conta Cloudflare — não é algo que dá pra automatizar
-sem suas credenciais reais:
+Diferente da primeira versão deste stack (que previa um túnel
+locally-managed, com `config.yml`/`credentials.json` gerados por
+`cloudflared tunnel create`), este túnel foi criado direto no painel
+**Cloudflare Zero Trust → Networks → Tunnels**. Nesse modelo:
 
-```bash
-# Em qualquer máquina com cloudflared instalado (não precisa ser o host):
-cloudflared tunnel login
-cloudflared tunnel create papermoon-platform
-```
+- O ingress (quais hostnames públicos apontam para qual serviço interno,
+  ex: `app.papermoon.cloud` → `http://192.168.1.102:3000`) é configurado
+  na aba **Public Hostname** do túnel, no próprio painel — não existe
+  `config.yml` neste repositório.
+- O único segredo necessário aqui é o **token** do túnel (painel > seu
+  túnel > "Install connector" > copie o valor depois de `--token` no
+  comando `cloudflared tunnel run --token ...`).
+- `cloudflared` roda com `tunnel --no-autoupdate run --token <TOKEN>` —
+  sem volumes, sem arquivos de config montados.
 
-O segundo comando imprime o **Tunnel ID** e cria um arquivo de credenciais
-(`~/.cloudflared/<TUNNEL_ID>.json`).
+**Vantagem** sobre o modelo locally-managed: zero arquivo de credencial
+para proteger/rotacionar neste repo, e qualquer mudança de ingress (novo
+hostname, trocar porta) é feita no painel, sem precisar rodar Ansible de
+novo. **Desvantagem**: o ingress vive fora do IaC — se quiser reconstruir
+o túnel do zero via Terraform/Ansible, os hostnames precisam ser
+recriados manualmente no painel (não há hoje um provider Terraform para
+isso neste projeto).
 
-## Onde colocar os valores reais
+## Onde colocar o token real
 
-1. **Tunnel ID** → `ansible/playbooks/host_vars/cloudflare-tunnel.yml`
-   (`cloudflare_tunnel_id`).
-2. **Arquivo de credenciais** → copie o conteúdo do JSON gerado para
-   `ansible/files/cloudflare-tunnel-credentials.json`, substituindo o
-   placeholder. Depois criptografe:
-   ```bash
-   ansible-vault encrypt ansible/files/cloudflare-tunnel-credentials.json
-   ```
-3. **Registros DNS**: no painel Cloudflare, aponte os hostnames usados em
-   `cloudflare_tunnel_ingress` (`ansible/playbooks/host_vars/cloudflare-tunnel.yml`)
-   como CNAME para `<TUNNEL_ID>.cfargotunnel.com`.
+`ansible/playbooks/host_vars/cloudflare-tunnel.yml` (`cloudflare_tunnel_token`)
+— **só no controlador (host Proxmox), nunca commitado**. O arquivo neste
+repositório mantém sempre o placeholder `CHANGE_ME_TUNNEL_TOKEN`; o valor
+real é editado direto no `host_vars` do controlador, seguindo o mesmo
+padrão de todo outro segredo desta plataforma (ver `docs/ansible.md`).
+Criptografe com `ansible-vault encrypt` assim que possível.
 
-## `config.yml` é gerado, não versionado com valor real
+## Ingress atual
 
-`config.yml.j2` (neste diretório) é um template — o Ansible renderiza os
-valores reais de `ansible/playbooks/host_vars/cloudflare-tunnel.yml` na hora do
-deploy (`docker_app_extra_files` com `template: true`, ver
-`ansible/playbooks/deploy-cloudflare-tunnel.yml`). Não crie um
-`config.yml` real aqui.
-
-## Ingress inicial: só o PaperMoon
-
-Os hostnames placeholder (`app.papermoon.cloud`, `webhooks.papermoon.cloud`)
-apontam para o PaperMoon (192.168.1.102), portas 3000 (Next.js) e 8000
-(Django API — usado pelo webhook do Asaas). Se outro app desta plataforma
-(Nextcloud, Vaultwarden, etc.) precisar de acesso público no futuro, basta
-adicionar uma nova entrada em `cloudflare_tunnel_ingress` — sem tocar no
-compose ou no template.
+Configurado no painel (não neste repo): hostnames apontando para o
+PaperMoon (192.168.1.102), portas 3000 (Next.js) e 8000 (Django API —
+usado pelo webhook do Asaas). Se outro app desta plataforma (Nextcloud,
+Vaultwarden, etc.) precisar de acesso público no futuro, basta adicionar
+uma nova "Public Hostname" no painel — sem tocar neste repositório.

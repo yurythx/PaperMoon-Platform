@@ -3,7 +3,7 @@ services:
     image: cloudflare/cloudflared:latest
     container_name: cloudflare-tunnel
     restart: unless-stopped
-    command: tunnel --config /etc/cloudflared/config.yml run
-    volumes:
-      - ./config.yml:/etc/cloudflared/config.yml:ro
-      - ./credentials.json:/etc/cloudflared/credentials.json:ro
+    # Túnel remotely-managed (criado no painel Zero Trust, não via
+    # `cloudflared tunnel create`) — ingress/hostnames vivem no painel
+    # Cloudflare, não em config.yml local. Ver README.md.
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}

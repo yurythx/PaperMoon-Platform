@@ -1,12 +1,13 @@
 ---
-# PLACEHOLDER — preencha após criar o túnel de verdade (ver
-# docker/cloudflare-tunnel/README.md), depois criptografe:
+# Túnel remotely-managed (criado no painel Zero Trust da Cloudflare) — o
+# ingress (quais hostnames apontam pra qual serviço interno) é configurado
+# lá no painel, em "Public Hostname", não neste repositório. Ver README.md.
+#
+# PLACEHOLDER — cole o token real (painel Cloudflare > Zero Trust > Networks
+# > Tunnels > seu túnel > "Install connector" > comando `cloudflared tunnel
+# run --token ...`, é o valor depois de --token) e criptografe:
 #   ansible-vault encrypt host_vars/cloudflare-tunnel.yml
-cloudflare_tunnel_id: "CHANGE_ME_TUNNEL_ID"
-
-cloudflare_tunnel_ingress:
-  - { hostname: "app.papermoon.cloud", service: "http://192.168.1.102:3000" }
-  - { hostname: "webhooks.papermoon.cloud", service: "http://192.168.1.102:8000" }
+cloudflare_tunnel_token: "CHANGE_ME_TUNNEL_TOKEN"
 
 # cloudflared só faz conexões de saída — nenhuma porta de entrada necessária.
 firewall_allowed_ports: []

@@ -1,9 +1,0 @@
-tunnel: {{ cloudflare_tunnel_id }}
-credentials-file: /etc/cloudflared/credentials.json
-
-ingress:
-{% for rule in cloudflare_tunnel_ingress %}
-  - hostname: {{ rule.hostname }}
-    service: {{ rule.service }}
-{% endfor %}
-  - service: http_status:404

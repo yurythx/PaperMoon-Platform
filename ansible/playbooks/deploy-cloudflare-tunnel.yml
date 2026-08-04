@@ -6,9 +6,5 @@
       vars:
         docker_app_name: cloudflare-tunnel
         docker_app_compose_src: "{{ playbook_dir }}/../../docker/cloudflare-tunnel/docker-compose.yml"
-        docker_app_extra_files:
-          - src: "{{ playbook_dir }}/../../docker/cloudflare-tunnel/config.yml.j2"
-            dest: "config.yml"
-            template: true
-          - src: "{{ playbook_dir }}/../files/cloudflare-tunnel-credentials.json"
-            dest: "credentials.json"
+        docker_app_env:
+          CLOUDFLARE_TUNNEL_TOKEN: "{{ cloudflare_tunnel_token }}"
