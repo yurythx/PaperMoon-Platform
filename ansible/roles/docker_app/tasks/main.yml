@@ -19,6 +19,18 @@
   ansible.builtin.set_fact:
     docker_app_dir: "{{ docker_app_dir | default('/opt/docker/' + docker_app_name) }}"
 
+# Garantido explicitamente porque o Ansible só aplica o 'mode' pedido ao
+# diretório-folha — se /opt/docker precisar ser criado implicitamente como
+# pai (primeira stack de cada host), ele herda permissão default (0750 no
+# umask deste sistema), não o 0755 que os containers bind-montados exigem
+# pra sequer atravessar o path. Descoberto com o Prometheus crash-loopando
+# em "permission denied" mesmo com prometheus.yml já em 0644.
+- name: Garantir permissão de travessia em /opt/docker
+  ansible.builtin.file:
+    path: /opt/docker
+    state: directory
+    mode: "0755"
+
 - name: Criar diretório da stack
   ansible.builtin.file:
     path: "{{ docker_app_dir }}"
