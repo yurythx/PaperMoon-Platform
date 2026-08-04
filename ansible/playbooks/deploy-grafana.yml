@@ -13,5 +13,8 @@
           GF_ADMIN_PASSWORD: "{{ grafana_admin_password }}"
           GF_ROOT_URL: "{{ grafana_root_url }}"
         docker_app_extra_files:
-          - src: "{{ playbook_dir }}/../../docker/grafana/provisioning"
+          # Barra final no src é obrigatória: copy() sem ela copia a PASTA
+          # "provisioning" pra dentro de "dest: provisioning", virando
+          # provisioning/provisioning/... — com a barra, copia o CONTEÚDO.
+          - src: "{{ playbook_dir }}/../../docker/grafana/provisioning/"
             dest: "provisioning"
