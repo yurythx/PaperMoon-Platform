@@ -20,16 +20,16 @@
     state: present
 
 # community.general.timezone quebra em ansible-core 2.19 ("Finalization of
-# task args ... is undefined", reproduzido contra o host real independente
-# do nome da variável) — usa timedatectl direto em vez do módulo.
-- name: Verificar timezone atual
-  ansible.builtin.command: timedatectl show --property=Timezone --value
-  register: current_timezone
-  changed_when: false
-
+# task args ... is undefined"). Um 'when' comparando um valor registrado com
+# uma group_var também quebrou do mesmo jeito ("is undefined" mesmo com a
+# var definida e confirmada via debug) — parece um bug real de
+# ansible-core 2.19 na resolução de 'when' nesse cenário específico, não
+# algo que valha a pena investigar mais fundo aqui. 'timedatectl' sozinho,
+# sem condicional, já é idempotente no nível do SO (rodar de novo com o
+# mesmo valor não tem efeito colateral).
 - name: Definir timezone
   ansible.builtin.command: "timedatectl set-timezone {{ system_timezone }}"
-  when: current_timezone.stdout != system_timezone
+  changed_when: false
 
 # --- Atualizações automáticas de segurança (Fase 4) ---
 # Patches de segurança são aplicados sozinhos; reboot (raro — só
