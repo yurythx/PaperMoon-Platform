@@ -14,6 +14,14 @@ firewall_lan_cidr: "192.168.1.0/24"
 ssh_public_keys:
   - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICh388T4h2emfa8nqsFmNS7JTKMa9nipCa32yLESJwcV papermoon-platform-terraform"
 
+# Senha real do usuário de suporte — só serve pro Console local do Proxmox
+# (getty dentro do LXC), SSH continua exclusivamente por chave
+# (harden_ssh abaixo desabilita PasswordAuthentication). Gere com:
+#   openssl passwd -6 -salt "$(openssl rand -hex 8)" "SUA_SENHA_AQUI"
+# PLACEHOLDER — substitua e criptografe este arquivo com ansible-vault
+# antes de considerar isso seguro em produção de verdade.
+support_user_password_hash: "CHANGE_ME_$6$saltgerado$hashgerado"
+
 # Endurecimento de SSH aplicado pela role "common". Deixe true em produção;
 # só desligue temporariamente se precisar depurar acesso.
 harden_ssh: true

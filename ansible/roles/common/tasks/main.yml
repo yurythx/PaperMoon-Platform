@@ -50,13 +50,19 @@
     enabled: true
     state: started
 
-- name: Criar usuário de suporte
+# Senha real (não só chave SSH) — usada exclusivamente pelo Console do
+# Proxmox (getty local dentro do LXC), já que SSH continua key-only
+# (PasswordAuthentication no, abaixo). Sem isso, root e suporte ficam com
+# a conta bloqueada ("passwd -S" mostra "L") e ninguém consegue logar pelo
+# Console em caso de a chave SSH não estar à mão.
+- name: Criar usuário de suporte (com senha real, pro Console do Proxmox)
   ansible.builtin.user:
     name: "{{ support_user }}"
     groups: sudo
     append: true
     shell: /bin/bash
     create_home: true
+    password: "{{ support_user_password_hash }}"
 
 - name: Autorizar chaves SSH para o usuário de suporte
   ansible.posix.authorized_key:
