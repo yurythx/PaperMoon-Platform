@@ -15,6 +15,14 @@
         name: git
         state: present
 
+    # /opt é raiz-only; sem isso o clone (rodando como suporte) falha com
+    # "Permission denied" tentando criar /opt/docker/papermoon.
+    - name: Garantir /opt/docker
+      ansible.builtin.file:
+        path: /opt/docker
+        state: directory
+        mode: "0755"
+
     - name: Clonar o repositório do PaperMoon (só na primeira vez — deploy.sh cuida do 'git pull' depois)
       ansible.builtin.git:
         repo: "https://github.com/yurythx/papermoon.git"
