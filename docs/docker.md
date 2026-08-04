@@ -13,7 +13,7 @@ Cada `docker/<app>/` é independente e contém:
 
 O `.env` **real** de cada host não é editado manualmente — ele é gerado
 pela role `docker_app` do Ansible (Fase 3a) a partir de
-`ansible/host_vars/<app>.yml` (segredos ali devem estar
+`ansible/playbooks/host_vars/<app>.yml` (segredos ali devem estar
 `ansible-vault`-criptografados antes de produção).
 
 ## Rede entre stacks
@@ -61,7 +61,7 @@ solução implementada:
    o push a versão antiga (com a rede compartilhada) continua sendo
    puxada.
 2. **`ufw`** do host 102 libera as portas 3000/8000 só para 192.168.1.101
-   (`ansible/host_vars/papermoon.yml`), mesmo padrão usado em
+   (`ansible/playbooks/host_vars/papermoon.yml`), mesmo padrão usado em
    `nextcloud-mariadb`/`nextcloud-redis`.
 3. **cloudflared** (`docker/cloudflare-tunnel/config.yml.j2`) aponta os
    hostnames para `192.168.1.102:3000` e `192.168.1.102:8000` diretamente,

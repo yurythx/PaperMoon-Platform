@@ -23,7 +23,7 @@ prioritizei essa troca agora.
 ## Rede
 
 Porta 6379 publicada no host, liberada no `ufw` só para o IP do Nextcloud
-(192.168.1.120) — ver `ansible/host_vars/nextcloud-redis.yml`.
+(192.168.1.120) — ver `ansible/playbooks/host_vars/nextcloud-redis.yml`.
 
 ## Variáveis (`.env`)
 

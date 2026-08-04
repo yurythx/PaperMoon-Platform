@@ -52,7 +52,7 @@ docs/         # documentação de cada camada (ver abaixo)
 Este repositório está pronto em código, mas nada foi executado contra
 infraestrutura real ainda. Antes de rodar:
 
-- Preencher os `terraform.tfvars` e todos os `ansible/host_vars/*.yml`
+- Preencher os `terraform.tfvars` e todos os `ansible/playbooks/host_vars/*.yml`
   (hoje com placeholders `CHANGE_ME`) com valores reais, e criptografar os
   que têm segredo com `ansible-vault`.
 - Criar o túnel Cloudflare de verdade (ver `docker/cloudflare-tunnel/README.md`).

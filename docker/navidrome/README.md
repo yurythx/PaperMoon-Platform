@@ -13,4 +13,4 @@ duas como uma biblioteca só. Mount somente leitura.
 ## Rede
 
 Porta 4533, liberada só para a LAN de casa
-(`ansible/host_vars/navidrome.yml`).
+(`ansible/playbooks/host_vars/navidrome.yml`).

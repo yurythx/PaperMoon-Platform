@@ -144,9 +144,9 @@ papermoon-platform/
 │       └── production/
 ├── ansible/
 │   ├── inventory/
-│   ├── group_vars/
-│   ├── host_vars/
 │   ├── playbooks/
+│   │   ├── group_vars/          # não em ansible/group_vars — ver docs/ansible.md
+│   │   └── host_vars/           # não em ansible/host_vars — ver docs/ansible.md
 │   └── roles/                  # roles reutilizáveis (docker, users, firewall, etc.)
 ├── docker/
 │   ├── jellyfin/

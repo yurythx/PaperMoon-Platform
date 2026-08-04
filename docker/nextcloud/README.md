@@ -36,14 +36,14 @@ do sistema no host, não dentro do compose — ver
 ## Atenção: credenciais duplicadas em 3 arquivos
 
 `MYSQL_PASSWORD` aqui **precisa ser idêntico** ao `mariadb_password` em
-`ansible/host_vars/nextcloud-mariadb.yml`, e `REDIS_HOST_PASSWORD` precisa
-bater com `redis_password` em `ansible/host_vars/nextcloud-redis.yml`. Não
+`ansible/playbooks/host_vars/nextcloud-mariadb.yml`, e `REDIS_HOST_PASSWORD` precisa
+bater com `redis_password` em `ansible/playbooks/host_vars/nextcloud-redis.yml`. Não
 há mecanismo automático ligando os três — se trocar a senha em um lugar,
 troque nos outros dois também.
 
 ## Rede
 
 Porta 8080 publicada e liberada no `ufw` para a LAN inteira por enquanto
-(`ansible/host_vars/nextcloud.yml`). Se um dia o Nextcloud for exposto
+(`ansible/playbooks/host_vars/nextcloud.yml`). Se um dia o Nextcloud for exposto
 publicamente via Cloudflare Tunnel, restringir essa regra ao IP do túnel
 (101), no mesmo padrão já usado para as portas de banco/cache.

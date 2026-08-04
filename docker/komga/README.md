@@ -17,4 +17,4 @@ Mounts somente leitura — o Komga só lê os arquivos, nunca escreve neles
 ## Rede
 
 Porta 25600, liberada só para a LAN de casa
-(`ansible/host_vars/komga.yml`).
+(`ansible/playbooks/host_vars/komga.yml`).

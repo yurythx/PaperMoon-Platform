@@ -35,4 +35,4 @@ de novo.
 ## Rede
 
 Porta 9090, liberada só para a LAN de casa
-(`ansible/host_vars/prometheus.yml`).
+(`ansible/playbooks/host_vars/prometheus.yml`).

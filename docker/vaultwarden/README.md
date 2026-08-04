@@ -40,4 +40,4 @@ onde perder dados significa perder senhas de verdade.
 ## Rede
 
 Porta 8222, liberada só para a LAN de casa
-(`ansible/host_vars/vaultwarden.yml`).
+(`ansible/playbooks/host_vars/vaultwarden.yml`).

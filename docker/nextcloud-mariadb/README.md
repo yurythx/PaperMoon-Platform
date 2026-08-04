@@ -15,7 +15,7 @@ padrão do MariaDB.
 ## Rede
 
 Porta 3306 é publicada no host, mas o `ufw` (role `firewall` do Ansible,
-ver `ansible/host_vars/nextcloud-mariadb.yml`) só libera essa porta para o
+ver `ansible/playbooks/host_vars/nextcloud-mariadb.yml`) só libera essa porta para o
 IP do container Nextcloud (192.168.1.120) — nenhum outro host da LAN
 consegue conectar.
 

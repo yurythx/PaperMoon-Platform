@@ -23,4 +23,4 @@ conexões de entrada).
 - Porta 6881 (TCP+UDP): liberada para **qualquer origem** (`from` omitido
   no `ufw`) — precisa aceitar peers vindos da internet real, não só da LAN.
 
-Ver `ansible/host_vars/qbittorrent.yml`.
+Ver `ansible/playbooks/host_vars/qbittorrent.yml`.

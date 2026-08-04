@@ -35,4 +35,4 @@ arquivos de mídia originais.
 ## Rede
 
 Porta 8096 (WebUI/streaming), liberada só para a LAN de casa
-(`firewall_lan_cidr`) — ver `ansible/host_vars/jellyfin.yml`.
+(`firewall_lan_cidr`) — ver `ansible/playbooks/host_vars/jellyfin.yml`.

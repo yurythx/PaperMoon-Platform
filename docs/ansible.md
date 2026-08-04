@@ -21,14 +21,14 @@ ansible/
 ├── site.yml                     # wrapper -> playbooks/site.yml (para bater com o comando do CLAUDE.md)
 ├── inventory/production.yml     # 12 hosts, IPs fixos (bater com o output do Terraform)
 ├── files/                       # segredos não-YAML (ex: credentials.json do cloudflared)
-├── group_vars/
-│   ├── all.yml                  # usuário de suporte, timezone, chaves SSH, firewall_lan_cidr
-│   └── docker_hosts.yml         # pacotes do Docker + firewall_common_ports (ex: node_exporter)
-├── host_vars/                   # 1 arquivo por app: env vars da stack + firewall_allowed_ports + backup_jobs
 ├── playbooks/
 │   ├── site.yml                 # aplica common+docker_engine+node_exporter+backup+firewall em todos os hosts
 │   ├── deploy-<app>.yml         # 1 por app (Fase 3b) — a maioria usa a role docker_app
-│   └── templates/               # templates específicos de playbook (ex: .env.production do PaperMoon)
+│   ├── templates/               # templates específicos de playbook (ex: .env.production do PaperMoon)
+│   ├── group_vars/              # IMPORTANTE: aqui, não em ansible/group_vars — ver nota abaixo
+│   │   ├── all.yml               # usuário de suporte, timezone, chaves SSH, firewall_lan_cidr
+│   │   └── docker_hosts.yml      # pacotes do Docker + firewall_common_ports (ex: node_exporter)
+│   └── host_vars/               # IMPORTANTE: aqui, não em ansible/host_vars — 1 arquivo por app
 └── roles/
     ├── common/                  # timezone, usuário suporte, hardening de SSH, unattended-upgrades
     ├── docker_engine/           # instala Docker CE + Compose plugin
@@ -39,6 +39,20 @@ ansible/
 ```
 
 ## Decisões técnicas
+
+### `group_vars`/`host_vars` moram em `playbooks/`, não na raiz de `ansible/`
+
+Descoberto rodando de verdade contra o host real: o Ansible resolve
+`group_vars`/`host_vars` relativos ao diretório do **arquivo de playbook
+que está sendo executado**, não ao diretório do wrapper `ansible/site.yml`
+nem ao diretório do inventário. Como todo playbook deste projeto mora em
+`ansible/playbooks/`, era ali que essas pastas precisavam estar —
+mantê-las em `ansible/group_vars/`/`ansible/host_vars/` (a estrutura
+original, nunca testada contra infraestrutura real) fazia toda variável
+resolver como `undefined` silenciosamente ao rodar qualquer playbook. Só
+apareceu na primeira execução real porque não há como isso ser pego por
+`--syntax-check` ou validação de YAML — é puramente sobre onde o Ansible
+procura essas pastas em tempo de execução.
 
 ### Inventário estático
 

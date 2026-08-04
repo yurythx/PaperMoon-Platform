@@ -36,7 +36,7 @@ Isso se acumulou ao longo da construção — reunindo tudo num lugar só:
 ### A.2 — Preencher segredos reais
 
 - [ ] `terraform/environments/production/terraform.tfvars` (a partir do `.example`)
-- [ ] Todos os `ansible/host_vars/*.yml` (hoje `CHANGE_ME`) — senhas de banco, `SECRET_KEY` do Django, `ADMIN_TOKEN` do Vaultwarden (hash Argon2 real), etc.
+- [ ] Todos os `ansible/playbooks/host_vars/*.yml` (hoje `CHANGE_ME`) — senhas de banco, `SECRET_KEY` do Django, `ADMIN_TOKEN` do Vaultwarden (hash Argon2 real), etc.
 - [ ] `ansible/files/cloudflare-tunnel-credentials.json` — só depois de criar o túnel de teste (ver A.4)
 - [ ] Depois de preencher tudo: `ansible-vault encrypt` em cada arquivo com segredo
 

@@ -23,4 +23,4 @@ métricas de host não há o que exibir de interessante ainda.
 ## Rede
 
 Porta 3000, liberada só para a LAN de casa
-(`ansible/host_vars/grafana.yml`).
+(`ansible/playbooks/host_vars/grafana.yml`).
