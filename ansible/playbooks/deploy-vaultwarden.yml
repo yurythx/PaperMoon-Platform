@@ -7,7 +7,7 @@
         docker_app_name: vaultwarden
         docker_app_compose_src: "{{ playbook_dir }}/../../docker/vaultwarden/docker-compose.yml"
         docker_app_env:
-          TZ: "{{ timezone }}"
+          TZ: "{{ system_timezone }}"
           DOMAIN: "{{ vaultwarden_domain }}"
           ADMIN_TOKEN: "{{ vaultwarden_admin_token }}"
           SIGNUPS_ALLOWED: "{{ vaultwarden_signups_allowed }}"

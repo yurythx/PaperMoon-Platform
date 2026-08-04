@@ -21,7 +21,7 @@
 
 - name: Definir timezone
   community.general.timezone:
-    name: "{{ timezone }}"
+    name: "{{ system_timezone }}"
 
 # --- Atualizações automáticas de segurança (Fase 4) ---
 # Patches de segurança são aplicados sozinhos; reboot (raro — só

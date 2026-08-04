@@ -27,7 +27,7 @@ nunca diretamente em `site.yml`.
         docker_app_env:
           PUID: 1000
           PGID: 1000
-          TZ: "{{ timezone }}"
+          TZ: "{{ system_timezone }}"
 ```
 
 Segredos (senhas, tokens) em `docker_app_env` devem vir de `host_vars/<app>.yml`

@@ -9,5 +9,5 @@
         docker_app_env:
           PUID: "{{ qbittorrent_puid }}"
           PGID: "{{ qbittorrent_pgid }}"
-          TZ: "{{ timezone }}"
+          TZ: "{{ system_timezone }}"
           WEBUI_PORT: "{{ qbittorrent_webui_port }}"

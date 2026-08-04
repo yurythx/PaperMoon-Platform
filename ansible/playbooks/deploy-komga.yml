@@ -7,5 +7,5 @@
         docker_app_name: komga
         docker_app_compose_src: "{{ playbook_dir }}/../../docker/komga/docker-compose.yml"
         docker_app_env:
-          TZ: "{{ timezone }}"
+          TZ: "{{ system_timezone }}"
           SERVER_PORT: "{{ komga_server_port }}"

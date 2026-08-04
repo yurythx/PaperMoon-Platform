@@ -1,6 +1,6 @@
 ---
 support_user: suporte
-timezone: "America/Sao_Paulo" # ajuste se o host físico estiver em outro fuso
+system_timezone: "America/Sao_Paulo" # ajuste se o host físico estiver em outro fuso
 
 # Usado como "from" padrão do ufw em portas que só devem ser alcançáveis
 # de dentro de casa (WebUIs) — mais restritivo que deixar "any" (que
