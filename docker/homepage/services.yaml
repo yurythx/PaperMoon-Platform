@@ -1,45 +1,48 @@
-# Links via IP:porta da LAN, não via domínio público — este dashboard é
-# usado de dentro de casa; rotear cada clique pelo Cloudflare Tunnel só
-# adicionaria uma volta desnecessária pra quem já está na rede.
+# Links via domínio público (Cloudflare Tunnel) onde existe rota
+# configurada — trocado de IP:porta da LAN a pedido, pra funcionar tanto
+# de dentro quanto de fora de casa com o mesmo link. Serviços sem rota
+# pública configurada continuam por IP:porta da LAN (ver comentário em
+# cada um) — atualizar aqui assim que a rota existir no painel Cloudflare.
 - Aplicações:
     - PaperMoon:
-        href: http://192.168.1.102:3000
+        href: https://papermoon.cloud
         description: SaaS multi-tenant (produção)
         icon: si-nextdotjs
     - Nextcloud:
-        href: http://192.168.1.120:8080
+        href: https://nextcloud.papermoon.cloud
         description: Nuvem privada
         icon: nextcloud
     - Vaultwarden:
-        href: http://192.168.1.123:8222
+        href: https://vault.papermoon.cloud
         description: Gerenciador de senhas
         icon: vaultwarden
 
 - Mídia:
     - Jellyfin:
-        href: http://192.168.1.110:8096
+        href: https://jellyfin.papermoon.cloud
         icon: jellyfin
     - Komga:
-        href: http://192.168.1.111:25600
+        href: https://komga.papermoon.cloud
         icon: komga
     - Navidrome:
-        href: http://192.168.1.113:4533
+        href: https://navidrome.papermoon.cloud
         icon: navidrome
     - qBittorrent:
-        href: http://192.168.1.112:8080
+        href: https://torrent.papermoon.cloud
         icon: qbittorrent
 
 - Observabilidade:
     - Grafana:
         href: http://192.168.1.130:3000
+        description: Sem rota pública configurada ainda — LAN apenas
         icon: grafana
     - Prometheus:
-        href: http://192.168.1.131:9090
+        href: https://prometheus.papermoon.cloud
         icon: prometheus
     - Uptime Kuma:
-        href: http://192.168.1.141:3001
+        href: https://status.papermoon.cloud
         icon: uptime-kuma
     - CrowdSec:
         href: http://192.168.1.132:8080
-        description: LAN apenas — engine/LAPI
+        description: LAN apenas, de propósito — nunca deve ter rota pública (motor de decisões que protege a frota inteira)
         icon: crowdsec

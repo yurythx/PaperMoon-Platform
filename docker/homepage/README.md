@@ -10,11 +10,21 @@ Versões recentes da imagem retornam **500** pra qualquer request cujo
 Inclui o IP:porta da LAN **e** o domínio público — sem os dois, um dos
 dois caminhos de acesso quebra.
 
-## Links via IP:porta da LAN, não via domínio público
+## Links via domínio público, onde existe rota no Cloudflare Tunnel
 
-`services.yaml` aponta pra cada serviço direto pelo IP interno — este
-dashboard é usado de dentro de casa; rotear cada clique pelo Cloudflare
-Tunnel só adicionaria uma volta desnecessária pra quem já está na LAN.
+`services.yaml` aponta pro domínio público (`https://<serviço>.papermoon.cloud`)
+pra cada serviço que já tem rota configurada no painel Zero Trust — assim
+o mesmo link funciona de dentro e de fora de casa. Trocado do IP:porta
+da LAN original a pedido do usuário, depois que as rotas do Cloudflare
+Tunnel foram criadas.
+
+**Duas exceções deliberadas, continuam por IP:porta da LAN:**
+- **Grafana** — não tem rota pública configurada ainda (não estava na
+  lista de rotas criadas). Atualizar pro domínio assim que existir.
+- **CrowdSec** — nunca deve ter rota pública, de propósito (é o
+  motor de decisões que protege a frota inteira; expô-lo publicamente
+  só aumentaria a superfície de ataque contra ele mesmo). Ver
+  `docker/crowdsec/README.md`.
 
 ## Config
 
