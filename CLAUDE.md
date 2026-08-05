@@ -67,7 +67,7 @@ Regras rígidas:
 
 ## Infraestrutura atual
 
-**Host:** Proxmox VE — bare metal AMD Ryzen 5 4500 (6 núcleos / 12 threads), **16GB RAM total**, com GPU disponível para passthrough (usada para transcodificação de hardware no Jellyfin).
+**Host:** Proxmox VE — bare metal AMD Ryzen 5 PRO 4650G (6 núcleos / 12 threads), **~15,3GB RAM utilizável** (`MemTotal` real via `/proc/meminfo`; 16GB nominal), com GPU integrada (Radeon) disponível para passthrough (usada para transcodificação de hardware no Jellyfin).
 **Rede:** `192.168.1.0/24` — gateway `192.168.1.1`
 
 ### Capacidade do host — restrição real de dimensionamento
@@ -116,6 +116,8 @@ downloads/{complete,incomplete,watch}
 | 130 | Grafana | |
 | 131 | Prometheus | |
 | 132 | CrowdSec | Engine/LAPI central (Fase 1) + bouncer nos outros 12 `docker_hosts` (Fase 2, concluída). Proxmox host (bare-metal) deliberadamente fora — sem `pct exec` de recuperação se der errado nele (ver `docker/crowdsec/README.md`) |
+| 140 | Homepage | Portal/dashboard central (gethomepage/homepage), config em YAML |
+| 141 | Uptime Kuma | Monitoramento de disponibilidade — monitores criados manualmente na UI (sem mecanismo de pré-config via env/arquivo) |
 
 ## Estratégia de banco de dados
 
@@ -134,6 +136,8 @@ PostgreSQL/MariaDB desnecessariamente.
 | Grafana | SQLite (interno) |
 | Prometheus | TSDB próprio |
 | CrowdSec | SQLite (interno) |
+| Homepage | Sem banco (config estática em YAML) |
+| Uptime Kuma | SQLite (interno) |
 
 ## Estrutura do repositório
 

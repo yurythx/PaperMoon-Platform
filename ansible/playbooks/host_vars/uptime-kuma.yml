@@ -1,0 +1,6 @@
+---
+backup_jobs:
+  - { name: uptime-kuma-data, type: volume, volume: uptime-kuma_uptime_kuma_data }
+
+firewall_allowed_ports:
+  - { port: 3001, proto: tcp, from: "{{ firewall_lan_cidr }}" }

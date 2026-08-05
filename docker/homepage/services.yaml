@@ -1,0 +1,45 @@
+# Links via IP:porta da LAN, não via domínio público — este dashboard é
+# usado de dentro de casa; rotear cada clique pelo Cloudflare Tunnel só
+# adicionaria uma volta desnecessária pra quem já está na rede.
+- Aplicações:
+    - PaperMoon:
+        href: http://192.168.1.102:3000
+        description: SaaS multi-tenant (produção)
+        icon: si-nextdotjs
+    - Nextcloud:
+        href: http://192.168.1.120:8080
+        description: Nuvem privada
+        icon: nextcloud
+    - Vaultwarden:
+        href: http://192.168.1.123:8222
+        description: Gerenciador de senhas
+        icon: vaultwarden
+
+- Mídia:
+    - Jellyfin:
+        href: http://192.168.1.110:8096
+        icon: jellyfin
+    - Komga:
+        href: http://192.168.1.111:25600
+        icon: komga
+    - Navidrome:
+        href: http://192.168.1.113:4533
+        icon: navidrome
+    - qBittorrent:
+        href: http://192.168.1.112:8080
+        icon: qbittorrent
+
+- Observabilidade:
+    - Grafana:
+        href: http://192.168.1.130:3000
+        icon: grafana
+    - Prometheus:
+        href: http://192.168.1.131:9090
+        icon: prometheus
+    - Uptime Kuma:
+        href: http://192.168.1.141:3001
+        icon: uptime-kuma
+    - CrowdSec:
+        href: http://192.168.1.132:8080
+        description: LAN apenas — engine/LAPI
+        icon: crowdsec

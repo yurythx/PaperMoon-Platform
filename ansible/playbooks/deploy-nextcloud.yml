@@ -28,3 +28,29 @@
         minute: "*/5"
         user: "{{ support_user }}"
         job: "docker exec -u www-data nextcloud php cron.php"
+
+    # NEXTCLOUD_TRUSTED_DOMAINS só é lido pelo entrypoint da imagem oficial
+    # na primeira instalação (quando config.php ainda não existe) — numa
+    # instância já instalada, mudar o env var e reiniciar o container não
+    # atualiza trusted_domains. Achado ao investigar "acessar através de um
+    # domínio inseguro" com o Nextcloud já em produção: precisa do occ.
+    - name: Verificar trusted_domains atual
+      ansible.builtin.command: docker exec -u www-data nextcloud php occ config:system:get trusted_domains
+      register: nc_trusted_domains
+      changed_when: false
+
+    # Nextcloud sempre inclui "localhost" no índice 0 por conta própria (nunca
+    # veio do nosso env var) — por isso o índice de destino é calculado pela
+    # contagem atual de entradas, não por uma posição fixa, senão sobrescreve
+    # um domínio já existente em vez de acrescentar.
+    - name: Determinar domínios ainda ausentes
+      ansible.builtin.set_fact:
+        nc_missing_domains: "{{ nextcloud_trusted_domains.split(' ') | difference(nc_trusted_domains.stdout_lines) }}"
+
+    - name: Adicionar domínios ausentes ao trusted_domains (occ) — pós-instalação
+      ansible.builtin.command: >-
+        docker exec -u www-data nextcloud php occ config:system:set
+        trusted_domains {{ nc_trusted_domains.stdout_lines | length + idx }} --value={{ item }}
+      loop: "{{ nc_missing_domains }}"
+      loop_control:
+        index_var: idx

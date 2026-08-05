@@ -1,0 +1,8 @@
+---
+homepage_allowed_hosts: "192.168.1.140:3000,home.papermoon.cloud"
+
+# Sem backup_jobs de propósito — settings.yaml/services.yaml/widgets.yaml
+# são a fonte da verdade (versionados em docker/homepage/), não há estado
+# de runtime que valha a pena backupear.
+firewall_allowed_ports:
+  - { port: 3000, proto: tcp, from: "{{ firewall_lan_cidr }}" }

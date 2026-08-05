@@ -1,0 +1,17 @@
+---
+- name: Deploy Homepage
+  hosts: homepage
+  roles:
+    - role: docker_app
+      vars:
+        docker_app_name: homepage
+        docker_app_compose_src: "{{ playbook_dir }}/../../docker/homepage/docker-compose.yml"
+        docker_app_env:
+          HOMEPAGE_ALLOWED_HOSTS: "{{ homepage_allowed_hosts }}"
+        docker_app_extra_files:
+          - src: "{{ playbook_dir }}/../../docker/homepage/settings.yaml"
+            dest: "config/settings.yaml"
+          - src: "{{ playbook_dir }}/../../docker/homepage/services.yaml"
+            dest: "config/services.yaml"
+          - src: "{{ playbook_dir }}/../../docker/homepage/widgets.yaml"
+            dest: "config/widgets.yaml"

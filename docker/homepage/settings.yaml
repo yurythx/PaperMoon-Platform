@@ -1,0 +1,14 @@
+title: PaperMoon Platform
+theme: dark
+color: slate
+headerStyle: boxed
+layout:
+  Aplicações:
+    style: row
+    columns: 3
+  Mídia:
+    style: row
+    columns: 4
+  Observabilidade:
+    style: row
+    columns: 4

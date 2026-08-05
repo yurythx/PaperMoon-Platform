@@ -12,7 +12,7 @@ como qualquer outra.
 
 ## Orçamento de RAM/CPU — restrição real de hardware
 
-O host tem **16GB de RAM total** (Ryzen 5 4500, 6 núcleos/12 threads). Isso
+O host tem **~15,3GB de RAM utilizável** (16GB nominal; Ryzen 5 PRO 4650G, 6 núcleos/12 threads — confirmado via `/proc/meminfo`, corrigido de "4500" nesta revisão). Isso
 não dá pra alocar os containers "confortavelmente" — a primeira versão deste
 Terraform somava ~17GB só nos 10 containers de app, sem nem contar 101/102.
 Revisado para caber com folga:
@@ -31,8 +31,15 @@ Revisado para caber com folga:
 | vaultwarden (123) | 1 | 256 | Binário Rust, extremamente leve |
 | grafana (130) | 1 | 512 | |
 | prometheus (131) | 1 | 1024 | Poucos hosts/exporters neste homelab |
-| crowdsec (132) | 1 | 512 | Engine Go + SQLite embutido — Fase 1 só (sem bouncers nos outros hosts ainda, ver `docker/crowdsec/README.md`) |
-| **Total** | **18** | **~12,25GB** | + ~1,5GB reservado pro Proxmox = ~13,75GB de 16GB (~14% de folga) |
+| crowdsec (132) | 1 | 512 | Engine Go + SQLite embutido. Fase 1 (engine) + Fase 2 (bouncer nos outros 12 `docker_hosts`) concluídas — ver `docker/crowdsec/README.md` |
+| homepage (140) | 1 | 512 | Dashboard estático (YAML), sem banco |
+| uptime-kuma (141) | 1 | 512 | SQLite embutido |
+| **Total** | **20** | **~13,25GB** | + ~1,5GB reservado pro Proxmox = ~14,75GB de ~15,3GB utilizáveis (**~3,6% de folga — apertado**) |
+
+**Sem espaço pra mais nada pesado sem upgrade de RAM ou remoção de algo
+existente.** Keycloak+GLPI+n8n+Zabbix (avaliados numa correção de
+infraestrutura posterior) somariam ~6GB a mais — não cabem no orçamento
+atual. Decisão registrada: ficam de fora até resolver hardware.
 
 `cores` é um teto de CPU (soft cap via cgroups do LXC), não uma reserva
 exclusiva — por isso a soma (17) pode passar do número de threads físicas

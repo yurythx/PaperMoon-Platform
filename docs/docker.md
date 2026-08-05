@@ -47,6 +47,8 @@ completo dos bugs reais encontrados e corrigidos nesse processo.
 | `cloudflare-tunnel` | 101 | ✅ testado | Túnel remotely-managed (token, não `config.yml`/`credentials.json` — ver `docker/cloudflare-tunnel/README.md`). Conectado à borda Cloudflare, 4 conexões QUIC confirmadas |
 | `crowdsec` | 132 | ✅ testado | Engine/LAPI central (Fase 1) + bouncer nos outros 12 `docker_hosts`, incluindo `papermoon`/`vaultwarden` (Fase 2, concluída). `cscli bouncers list` confirma os 13 hosts com "Last API pull" recente. Proxmox host de fora, de propósito (ver `docker/crowdsec/README.md`) |
 | `papermoon` | 102 | ✅ | não usa a role `docker_app` genérica — reaproveita o `deploy.sh` próprio do app (git pull + build + migrate + health-check + rollback) |
+| `homepage` | 140 | ⏳ pendente | Dashboard central (gethomepage/homepage) — links por IP:porta da LAN em `services.yaml` |
+| `uptime-kuma` | 141 | ⏳ pendente | Monitores criados manualmente na UI, sem mecanismo de pré-config (ver `docker/uptime-kuma/README.md`) |
 
 ### Resolvido: rede entre `cloudflare-tunnel` e `papermoon`
 
