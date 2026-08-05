@@ -71,6 +71,23 @@
     mode: "0600"
   when: not docker_app_env_stat.stat.exists or (docker_app_force_env_regen | default(false))
 
+# Achado implantando o Homepage: 'copy'/'template' não criam o diretório
+# pai do destino sozinhos — só funcionava até agora porque todo
+# docker_app_extra_files anterior tinha 'dest' direto na raiz de
+# docker_app_dir (ex: "prometheus.yml"). O primeiro 'dest' com subpasta
+# (ex: "config/settings.yaml") falhou com "Destination directory ...
+# does not exist". Generalizado aqui em vez de corrigido só no playbook
+# do Homepage, pra qualquer stack futuro com subpasta já funcionar.
+- name: Garantir que os diretórios pai dos arquivos extras existem
+  ansible.builtin.file:
+    path: "{{ docker_app_dir }}/{{ item.dest | dirname }}"
+    state: directory
+    mode: "0755"
+    owner: "{{ support_user }}"
+    group: "{{ support_user }}"
+  loop: "{{ docker_app_extra_files }}"
+  when: (item.dest | dirname) != '.'
+
 # 0644 (não 0640): estes arquivos são bind-montados DENTRO de containers cujo
 # processo roda com um UID interno qualquer (ex: prometheus roda como uid
 # 65534 "nobody") — sem leitura pra "outros" no arquivo, o container recebe
