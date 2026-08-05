@@ -1,0 +1,7 @@
+---
+# PLACEHOLDER — gerar com: openssl rand -hex 32
+# Criptografar depois de preencher: ansible-vault encrypt host_vars/homarr.yml
+homarr_secret_encryption_key: "CHANGE_ME_64_HEX_CHARS"
+
+firewall_allowed_ports:
+  - { port: 7575, proto: tcp, from: "{{ firewall_lan_cidr }}" }

@@ -1,0 +1,10 @@
+---
+- name: Deploy Homarr
+  hosts: homarr
+  roles:
+    - role: docker_app
+      vars:
+        docker_app_name: homarr
+        docker_app_compose_src: "{{ playbook_dir }}/../../docker/homarr/docker-compose.yml"
+        docker_app_env:
+          SECRET_ENCRYPTION_KEY: "{{ homarr_secret_encryption_key }}"

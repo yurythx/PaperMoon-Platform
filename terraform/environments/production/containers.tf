@@ -234,15 +234,19 @@ module "crowdsec" {
 # --- Novos serviços (correção + expansão Terraform/Ansible) ---
 # Keycloak, GLPI, n8n e Zabbix ficaram de fora deliberadamente — juntos
 # somam ~6GB e estourariam o orçamento real de RAM (~13,8GB utilizáveis,
-# já ~12,25GB alocados). Só Homepage + Uptime Kuma agora (~1GB, cabem com
+# já ~12,25GB alocados). Só Homarr + Uptime Kuma agora (~1GB, cabem com
 # folga). Ver docs/terraform.md.
 
-module "homepage" {
+# Renomeado de "homepage" pra "homarr" — trocamos de gethomepage/homepage
+# pro Homarr (mesmo CT 140/IP, só o app rodando nele mudou). Nome do
+# recurso segue o que está rodando, pra nunca confundir com o produto
+# abandonado.
+module "homarr" {
   source = "../../modules/lxc"
 
   node_name        = var.pm_node_name
   vm_id            = 140
-  hostname         = "homepage"
+  hostname         = "homarr"
   tags             = ["docker", "portal"]
   cores            = 1
   memory_mb        = 512

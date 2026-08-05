@@ -15,7 +15,7 @@ Terraform/Ansible.
 ## Monitores a criar (ação manual, uma vez)
 
 Cada um como "HTTP(s)" apontando pro IP:porta da LAN (mesmos links do
-`docker/homepage/services.yaml`):
+`docker/homarr/README.md`):
 
 | Monitor | URL |
 |---|---|

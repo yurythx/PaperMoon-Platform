@@ -1,0 +1,18 @@
+services:
+  homarr:
+    image: ghcr.io/homarr-labs/homarr:latest
+    container_name: homarr
+    restart: unless-stopped
+    environment:
+      SECRET_ENCRYPTION_KEY: ${SECRET_ENCRYPTION_KEY}
+    volumes:
+      - homarr_appdata:/appdata
+      # Sem /var/run/docker.sock de propósito — a integração Docker do
+      # Homarr só faria sentido se todos os serviços rodassem no mesmo
+      # host Docker, e aqui cada um tem seu próprio LXC. Board é montado
+      # manualmente pela UI, mesmo padrão já usado pro Uptime Kuma.
+    ports:
+      - "7575:7575"
+
+volumes:
+  homarr_appdata:

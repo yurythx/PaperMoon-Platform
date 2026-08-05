@@ -32,7 +32,7 @@ Revisado para caber com folga:
 | grafana (130) | 1 | 512 | |
 | prometheus (131) | 1 | 1024 | Poucos hosts/exporters neste homelab |
 | crowdsec (132) | 1 | 512 | Engine Go + SQLite embutido. Fase 1 (engine) + Fase 2 (bouncer nos outros 12 `docker_hosts`) concluídas — ver `docker/crowdsec/README.md` |
-| homepage (140) | 1 | 512 | Dashboard estático (YAML), sem banco |
+| homarr (140) | 1 | 512 | Dashboard central — trocado de gethomepage/homepage (bug de cache real não resolvido, ver `docker/homarr/README.md`) |
 | uptime-kuma (141) | 1 | 512 | SQLite embutido |
 | **Total** | **20** | **~13,25GB** | + ~1,5GB reservado pro Proxmox = ~14,75GB de ~15,3GB utilizáveis (**~3,6% de folga — apertado**) |
 

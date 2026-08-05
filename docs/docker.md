@@ -47,8 +47,25 @@ completo dos bugs reais encontrados e corrigidos nesse processo.
 | `cloudflare-tunnel` | 101 | ✅ testado | Túnel remotely-managed (token, não `config.yml`/`credentials.json` — ver `docker/cloudflare-tunnel/README.md`). Conectado à borda Cloudflare, 4 conexões QUIC confirmadas |
 | `crowdsec` | 132 | ✅ testado | Engine/LAPI central (Fase 1) + bouncer nos outros 12 `docker_hosts`, incluindo `papermoon`/`vaultwarden` (Fase 2, concluída). `cscli bouncers list` confirma os 13 hosts com "Last API pull" recente. Proxmox host de fora, de propósito (ver `docker/crowdsec/README.md`) |
 | `papermoon` | 102 | ✅ | não usa a role `docker_app` genérica — reaproveita o `deploy.sh` próprio do app (git pull + build + migrate + health-check + rollback) |
-| `homepage` | 140 | ⏳ pendente | Dashboard central (gethomepage/homepage) — links por IP:porta da LAN em `services.yaml` |
+| `homarr` | 140 | ⏳ pendente | Dashboard central — ver "Abandonado: gethomepage/homepage" abaixo pro porquê da troca |
 | `uptime-kuma` | 141 | ⏳ pendente | Monitores criados manualmente na UI, sem mecanismo de pré-config (ver `docker/uptime-kuma/README.md`) |
+
+### Abandonado: gethomepage/homepage (bug de cache real, não resolvido)
+
+CT 140 foi implantado primeiro com `gethomepage/homepage`, funcionando
+(HTTP 200, config correta lida do volume). Depois de trocar
+`services.yaml` pra usar domínio público em vez de IP:porta da LAN, a
+página continuou servindo o link antigo mesmo após: reload do config,
+`docker restart`, e `docker compose up --force-recreate` (container
+totalmente novo, volume de config bind-mounted confirmado com o
+conteúdo certo via `docker exec cat`). A app roda em Next.js 16 com os
+dados de `services.yaml` embutidos num payload `fallback` de
+SSR/data-cache — o cache sobrevivendo a uma recriação completa do
+container (não só um restart do processo) não teve causa raiz
+identificada a tempo de valer a pena continuar investigando, dado que
+Homarr (próxima entrada) resolve o mesmo problema com mais recursos.
+Substituído por completo — nenhum resquício do stack antigo ficou no
+repositório.
 
 ### Resolvido: rede entre `cloudflare-tunnel` e `papermoon`
 

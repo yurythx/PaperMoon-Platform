@@ -41,13 +41,13 @@ all:
           ansible_host: 192.168.1.131
         crowdsec:
           ansible_host: 192.168.1.132
-        homepage:
+        homarr:
           ansible_host: 192.168.1.140
         uptime-kuma:
           ansible_host: 192.168.1.141
     # Fase 2 do CrowdSec — rollout host por host (ver
     # ansible/roles/crowdsec_bouncer/README.md). Começa só com prometheus
-    # (baixo risco) até verificar de ponta a ponta. homepage/uptime-kuma
+    # (baixo risco) até verificar de ponta a ponta. homarr/uptime-kuma
     # entram direto (hosts novos, sem produção rodando ainda — zero risco).
     crowdsec_bounced_hosts:
       hosts:
@@ -64,5 +64,5 @@ all:
         vaultwarden:
         papermoon:
         crowdsec:
-        homepage:
+        homarr:
         uptime-kuma:

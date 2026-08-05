@@ -116,7 +116,7 @@ downloads/{complete,incomplete,watch}
 | 130 | Grafana | |
 | 131 | Prometheus | |
 | 132 | CrowdSec | Engine/LAPI central (Fase 1) + bouncer nos outros 12 `docker_hosts` (Fase 2, concluída). Proxmox host (bare-metal) deliberadamente fora — sem `pct exec` de recuperação se der errado nele (ver `docker/crowdsec/README.md`) |
-| 140 | Homepage | Portal/dashboard central (gethomepage/homepage), config em YAML |
+| 140 | Homarr | Portal/dashboard central — trocado de gethomepage/homepage (achamos um bug real de cache não resolvido; Homarr tem mais recursos). Board configurado na própria UI, não em arquivo |
 | 141 | Uptime Kuma | Monitoramento de disponibilidade — monitores criados manualmente na UI (sem mecanismo de pré-config via env/arquivo) |
 
 ## Estratégia de banco de dados
@@ -136,7 +136,7 @@ PostgreSQL/MariaDB desnecessariamente.
 | Grafana | SQLite (interno) |
 | Prometheus | TSDB próprio |
 | CrowdSec | SQLite (interno) |
-| Homepage | Sem banco (config estática em YAML) |
+| Homarr | SQLite (interno) |
 | Uptime Kuma | SQLite (interno) |
 
 ## Estrutura do repositório
