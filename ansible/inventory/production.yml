@@ -47,3 +47,4 @@ all:
     crowdsec_bounced_hosts:
       hosts:
         prometheus:
+        grafana:
