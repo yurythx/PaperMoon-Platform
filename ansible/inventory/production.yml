@@ -56,3 +56,4 @@ all:
         nextcloud-mariadb:
         nextcloud-redis:
         vaultwarden:
+        papermoon:
