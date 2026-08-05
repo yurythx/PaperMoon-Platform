@@ -48,3 +48,4 @@ all:
       hosts:
         prometheus:
         grafana:
+        jellyfin:
