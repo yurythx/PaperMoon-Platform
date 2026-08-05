@@ -53,3 +53,4 @@ all:
         qbittorrent:
         navidrome:
         nextcloud:
+        nextcloud-mariadb:
