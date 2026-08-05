@@ -49,3 +49,4 @@ all:
         prometheus:
         grafana:
         jellyfin:
+        komga:
