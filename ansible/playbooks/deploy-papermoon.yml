@@ -66,6 +66,30 @@
         group: "{{ support_user }}"
       when: not papermoon_env_stat.stat.exists
 
+    # A geração acima só roda na 1ª vez (não sobrescreve o que o deploy.sh do
+    # próprio app grava depois, ex: chaves JWT). Isso significa que se
+    # host_vars/papermoon.yml mudar (ex: domínio real chegou depois do
+    # primeiro apply), o arquivo já existente nunca via de novo o valor
+    # atualizado — foi exatamente o que aconteceu aqui: o vault já tinha
+    # "https://app.papermoon.cloud" há tempo, mas o .env.production ao vivo
+    # ainda apontava pro IP da LAN, quebrando o redirect_uri do SSO (Keycloak
+    # tentava devolver o browser pra um IP privado inalcançável de fora).
+    # Estas linhas fecham esse gap de vez: alinham as chaves críticas de
+    # domínio/segurança a cada deploy, existindo o arquivo ou não.
+    - name: Alinhar domínio/segurança em .env.production com host_vars (idempotente)
+      ansible.builtin.lineinfile:
+        path: "{{ papermoon_dir }}/.env.production"
+        regexp: "^{{ item.key }}="
+        line: "{{ item.key }}={{ item.value }}"
+      loop:
+        - { key: "ALLOWED_HOSTS", value: "{{ papermoon_allowed_hosts }}" }
+        - { key: "CORS_ALLOWED_ORIGINS", value: "{{ papermoon_cors_allowed_origins }}" }
+        - { key: "FRONTEND_URL", value: "{{ papermoon_frontend_url }}" }
+        - { key: "NEXT_PUBLIC_SITE_URL", value: "{{ papermoon_frontend_url }}" }
+        - { key: "SECURE_COOKIES", value: "{{ papermoon_secure_cookies | default('false') }}" }
+      loop_control:
+        label: "{{ item.key }}"
+
     - name: Construir as imagens (backend + frontend)
       ansible.builtin.command:
         cmd: "{{ papermoon_compose_cmd }} build --parallel"
