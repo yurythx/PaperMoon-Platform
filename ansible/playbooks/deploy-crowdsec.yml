@@ -1,6 +1,28 @@
 ---
 - name: Deploy CrowdSec
   hosts: crowdsec
+  pre_tasks:
+    # Achado ao verificar o deploy: /var/log/auth.log fica parado neste
+    # template Ubuntu 24.04 — sshd moderno loga direto no journald quando
+    # detecta systemd, sem passar pelo socket clássico de syslog que o
+    # rsyslog (imuxsock) escuta. A regra "auth,authpriv.* -> auth.log" em
+    # 50-default.conf está correta; só nunca recebe a mensagem. imjournal
+    # faz a ponte journald -> arquivo. Escopo só deste host por enquanto —
+    # quando a Fase 2 (bouncers nos outros 11 LXCs) rolar, isso deveria
+    # virar parte da role "common" pra todo host que dependa de auth.log.
+    - name: Habilitar ponte journald -> rsyslog (imjournal) — auth.log fica parado sem isso
+      ansible.builtin.copy:
+        dest: /etc/rsyslog.d/70-imjournal.conf
+        content: |
+          module(load="imjournal" StateFile="imjournal.state")
+        mode: "0644"
+      register: imjournal_conf
+
+    - name: Reiniciar rsyslog se a config do imjournal mudou
+      ansible.builtin.systemd:
+        name: rsyslog
+        state: restarted
+      when: imjournal_conf.changed
   roles:
     - role: docker_app
       vars:
