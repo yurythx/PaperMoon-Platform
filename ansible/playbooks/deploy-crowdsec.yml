@@ -9,3 +9,6 @@
         docker_app_env:
           TZ: "{{ system_timezone }}"
           COLLECTIONS: "{{ crowdsec_collections }}"
+        docker_app_extra_files:
+          - src: "{{ playbook_dir }}/../../docker/crowdsec/acquis.yaml"
+            dest: "acquis.yaml"

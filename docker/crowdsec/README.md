@@ -35,6 +35,17 @@ porta com uma API key gerada via `cscli bouncers add <nome>` dentro do
 container, uma por host — não existe segredo pré-compartilhado a
 configurar nesta Fase 1.
 
+## Gotcha real: a imagem vem com um `acquis.yaml` placeholder
+
+A imagem oficial (`crowdsecurity/crowdsec`) sobe com um `acquis.yaml`
+padrão que literalmente aponta pra `/does/not/exist` — o engine carrega
+os cenários normalmente e não dá erro nenhum, mas nunca lê log de
+verdade até você sobrescrever esse arquivo. Achado ao verificar o
+container recém-implantado (`docker logs crowdsec` mostrava
+`"No matching files for pattern /does/not/exist"`). `acquis.yaml` deste
+diretório é montado por cima (mais específico que o volume
+`crowdsec_config`) apontando pro `auth.log` de verdade.
+
 ## Persistência
 
 `crowdsec_config` (parsers/cenários instalados via `cscli hub`,
