@@ -31,7 +31,8 @@ Revisado para caber com folga:
 | vaultwarden (123) | 1 | 256 | Binário Rust, extremamente leve |
 | grafana (130) | 1 | 512 | |
 | prometheus (131) | 1 | 1024 | Poucos hosts/exporters neste homelab |
-| **Total** | **17** | **~11,75GB** | + ~1,5GB reservado pro Proxmox = ~13,25GB de 16GB (~17% de folga) |
+| crowdsec (132) | 1 | 512 | Engine Go + SQLite embutido — Fase 1 só (sem bouncers nos outros hosts ainda, ver `docker/crowdsec/README.md`) |
+| **Total** | **18** | **~12,25GB** | + ~1,5GB reservado pro Proxmox = ~13,75GB de 16GB (~14% de folga) |
 
 `cores` é um teto de CPU (soft cap via cgroups do LXC), não uma reserva
 exclusiva — por isso a soma (17) pode passar do número de threads físicas

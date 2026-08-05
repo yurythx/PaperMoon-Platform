@@ -39,3 +39,5 @@ all:
           ansible_host: 192.168.1.130
         prometheus:
           ansible_host: 192.168.1.131
+        crowdsec:
+          ansible_host: 192.168.1.132

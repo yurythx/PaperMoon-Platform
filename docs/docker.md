@@ -44,7 +44,8 @@ completo dos bugs reais encontrados e corrigidos nesse processo.
 | `prometheus` | 131 | ✅ testado | `/-/healthy` confirmado; scrape de todos os 12 hosts via node_exporter (Fase 4) |
 | `grafana` | 130 | ✅ testado | datasource do Prometheus confirmado via API (`/api/datasources`) |
 | `papermoon` | 102 | ✅ testado | `deploy.sh` rodou ponta a ponta (build+migrate+health-check); 7 containers `healthy`; portas 3000/8000 publicadas e restritas via ufw ao IP do Cloudflare Tunnel. **SMTP/Asaas ainda são placeholder** — preencher antes de depender de e-mail/cobrança reais |
-| `cloudflare-tunnel` | 101 | ⏳ pendente | LXC existe (Terraform), mas o compose não foi subido — exige túnel real criado na sua conta Cloudflare primeiro (`docker/cloudflare-tunnel/README.md`). Sem isso o container só ficaria em crash-loop com credenciais falsas |
+| `cloudflare-tunnel` | 101 | ✅ testado | Túnel remotely-managed (token, não `config.yml`/`credentials.json` — ver `docker/cloudflare-tunnel/README.md`). Conectado à borda Cloudflare, 4 conexões QUIC confirmadas |
+| `crowdsec` | 132 | ⏳ pendente | Fase 1 apenas — engine/LAPI central, sem bouncers nos outros hosts ainda (ver `docker/crowdsec/README.md`) |
 | `papermoon` | 102 | ✅ | não usa a role `docker_app` genérica — reaproveita o `deploy.sh` próprio do app (git pull + build + migrate + health-check + rollback) |
 
 ### Resolvido: rede entre `cloudflare-tunnel` e `papermoon`

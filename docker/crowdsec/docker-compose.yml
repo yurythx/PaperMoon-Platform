@@ -1,0 +1,27 @@
+services:
+  crowdsec:
+    image: crowdsecurity/crowdsec:latest
+    container_name: crowdsec
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ}
+      # Cenários instalados no primeiro start — cobre SSH brute-force (o
+      # único log relevante que este LXC tem, hoje) e padrões genéricos de
+      # Linux. Bouncers de outros hosts (Fase 2, ainda não implementada)
+      # vão se registrar contra este mesmo LAPI.
+      COLLECTIONS: "crowdsecurity/sshd crowdsecurity/linux"
+    volumes:
+      - crowdsec_config:/etc/crowdsec
+      - crowdsec_data:/var/lib/crowdsec/data
+      # Só leitura — o parser lê o auth.log do próprio LXC (tentativas de
+      # SSH contra ele mesmo). Ver README.md sobre o escopo da Fase 1.
+      - /var/log/auth.log:/var/log/auth.log:ro
+    # LAPI (Local API) — bouncers de outros hosts (Fase 2) vão apontar pra
+    # cá. Liberado só pra LAN (ufw, ver host_vars/crowdsec.yml), nunca pra
+    # internet.
+    ports:
+      - "8080:8080"
+
+volumes:
+  crowdsec_config:
+  crowdsec_data:

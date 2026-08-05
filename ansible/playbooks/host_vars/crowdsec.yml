@@ -1,0 +1,10 @@
+---
+# Sem segredo real aqui na Fase 1 (só o engine) — bouncers da Fase 2 se
+# autenticam com uma API key gerada por host via `cscli bouncers add`
+# dentro do próprio container, não por uma variável compartilhada.
+crowdsec_collections: "crowdsecurity/sshd crowdsecurity/linux"
+
+# LAPI só pra LAN — nunca deve ser alcançável da internet. Bouncers de
+# outros hosts (Fase 2) vivem todos em 192.168.1.0/24.
+firewall_allowed_ports:
+  - { port: 8080, proto: tcp, from: "{{ firewall_lan_cidr }}" }

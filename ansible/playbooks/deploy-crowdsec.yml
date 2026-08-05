@@ -1,0 +1,11 @@
+---
+- name: Deploy CrowdSec
+  hosts: crowdsec
+  roles:
+    - role: docker_app
+      vars:
+        docker_app_name: crowdsec
+        docker_app_compose_src: "{{ playbook_dir }}/../../docker/crowdsec/docker-compose.yml"
+        docker_app_env:
+          TZ: "{{ system_timezone }}"
+          COLLECTIONS: "{{ crowdsec_collections }}"
