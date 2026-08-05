@@ -33,7 +33,7 @@ NEXT_PUBLIC_SITE_URL={{ papermoon_frontend_url }}
 # "false" só enquanto o acesso é via IP puro em HTTP (sem tunnel). Com
 # "Secure" e sem HTTPS o navegador descarta o cookie de sessão silenciosamente
 # e /api/auth/me sempre retorna 401 mesmo com login OK. Desde que o Cloudflare
-# Tunnel com HTTPS real (app.papermoon.cloud) está no ar, isto é "true" —
+# Tunnel com HTTPS real (papermoon.cloud) está no ar, isto é "true" —
 # ver papermoon_secure_cookies em host_vars/papermoon.yml.
 SECURE_COOKIES={{ papermoon_secure_cookies | default('false') }}
 

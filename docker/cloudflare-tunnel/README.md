@@ -12,7 +12,7 @@ locally-managed, com `config.yml`/`credentials.json` gerados por
 **Cloudflare Zero Trust → Networks → Tunnels**. Nesse modelo:
 
 - O ingress (quais hostnames públicos apontam para qual serviço interno,
-  ex: `app.papermoon.cloud` → `http://192.168.1.102:3000`) é configurado
+  ex: `papermoon.cloud` → `http://192.168.1.102:3000`) é configurado
   na aba **Public Hostname** do túnel, no próprio painel — não existe
   `config.yml` neste repositório.
 - O único segredo necessário aqui é o **token** do túnel (painel > seu

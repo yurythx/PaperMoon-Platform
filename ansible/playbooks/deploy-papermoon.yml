@@ -71,7 +71,7 @@
     # host_vars/papermoon.yml mudar (ex: domínio real chegou depois do
     # primeiro apply), o arquivo já existente nunca via de novo o valor
     # atualizado — foi exatamente o que aconteceu aqui: o vault já tinha
-    # "https://app.papermoon.cloud" há tempo, mas o .env.production ao vivo
+    # "https://papermoon.cloud" há tempo, mas o .env.production ao vivo
     # ainda apontava pro IP da LAN, quebrando o redirect_uri do SSO (Keycloak
     # tentava devolver o browser pra um IP privado inalcançável de fora).
     # Estas linhas fecham esse gap de vez: alinham as chaves críticas de
