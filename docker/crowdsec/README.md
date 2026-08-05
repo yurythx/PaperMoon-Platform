@@ -1,22 +1,24 @@
 # crowdsec (CT 132)
 
-## Escopo desta entrega (Fase 1) — só o engine central
+## Arquitetura — engine central + bouncer em cada host
 
 CrowdSec é composto de duas peças que normalmente vivem em máquinas
 diferentes:
 
 - **Engine (LAPI)** — lê logs, detecta padrões de ataque via cenários, e
-  mantém a lista de decisões (IPs bloqueados). É isso que roda aqui.
+  mantém a lista de decisões (IPs bloqueados). É isso que roda aqui (CT 132).
 - **Bouncer** — processo leve que aplica o bloqueio de fato (`iptables`)
-  na máquina que precisa ser protegida, falando com o LAPI central.
+  na máquina que precisa ser protegida, falando com o LAPI central. Ver
+  `ansible/roles/crowdsec_bouncer/README.md`.
 
-Este CT sobe **só o engine**. Sozinho, ele hoje só enxerga o próprio
-`auth.log` (tentativas de SSH contra ele mesmo) — pouco tráfego, pouco
-valor de proteção por si só. O ganho de segurança de verdade pra
-plataforma inteira vem da **Fase 2** (ainda não implementada,
-deliberadamente separada): instalar um bouncer leve em cada um dos outros
-11 LXCs + Proxmox host, todos registrados contra o LAPI deste container —
-uma detecção em qualquer host da rede vira bloqueio em todos.
+**Fase 1** (este CT): só o engine, lendo o próprio `auth.log`.
+**Fase 2** (concluída — todos os outros 12 `docker_hosts`, incluindo
+`papermoon` e `vaultwarden`, têm `crowdsec-firewall-bouncer` instalado e
+registrado contra este LAPI): uma detecção em qualquer host da rede (ou a
+blocklist coletiva da comunidade CrowdSec) vira bloqueio em todos, sem
+esperar log próprio de cada um. Proxmox host (bare-metal) deliberadamente
+**fora** do rollout automatizado — sem forma de recuperar via `pct exec`
+se uma regra de firewall der errado nele, ao contrário de qualquer LXC.
 
 ## Por que um LXC dedicado, e não junto de outro serviço
 
@@ -62,9 +64,14 @@ docker exec crowdsec cscli metrics       # cenários carregados, linhas parseada
 docker exec crowdsec cscli decisions list  # IPs banidos até agora (vazio é normal no início)
 ```
 
-## Próximo passo (Fase 2, não incluída aqui)
+## Verificar a Fase 2 (bouncers)
 
-Instalar `crowdsec-firewall-bouncer` nos outros 11 LXCs + Proxmox host,
-cada um registrado contra `http://192.168.1.132:8080` via
-`cscli bouncers add`. Ver `docs/terraform.md`/`docs/ansible.md` quando
-essa fase for planejada.
+```bash
+docker exec crowdsec cscli bouncers list   # todos os 12 hosts, "Last API pull" recente = vivo
+```
+
+## Próximo passo em aberto
+
+Proxmox host (bare-metal) sem bouncer — decisão deliberada, não esquecimento
+(ver acima). Se algum dia for feito, exige cuidado redobrado e um plano de
+recuperação fora de banda (console físico/IPMI), não só confirmação normal.

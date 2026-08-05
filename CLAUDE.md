@@ -115,7 +115,7 @@ downloads/{complete,incomplete,watch}
 | 123 | Vaultwarden | |
 | 130 | Grafana | |
 | 131 | Prometheus | |
-| 132 | CrowdSec | Fase 1 apenas — engine/LAPI central. Bouncers nos outros 11 CTs + Proxmox host ficam pra uma Fase 2 separada (ver `docker/crowdsec/README.md`) |
+| 132 | CrowdSec | Engine/LAPI central (Fase 1) + bouncer nos outros 12 `docker_hosts` (Fase 2, concluída). Proxmox host (bare-metal) deliberadamente fora — sem `pct exec` de recuperação se der errado nele (ver `docker/crowdsec/README.md`) |
 
 ## Estratégia de banco de dados
 
