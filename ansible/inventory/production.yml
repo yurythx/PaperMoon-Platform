@@ -51,3 +51,4 @@ all:
         jellyfin:
         komga:
         qbittorrent:
+        navidrome:
