@@ -21,3 +21,9 @@ supported_decisions_types:
   - ban
 iptables_chains:
   - INPUT
+  # Sem isso, um IP banido continua alcançando as portas publicadas pelo
+  # Docker (ex: 9090 do Prometheus) — o Docker insere suas próprias regras
+  # que podem furar a chain INPUT padrão pra tráfego de containers. Achado
+  # no primeiro deploy real (log do bouncer avisou: "The DOCKER-USER chain
+  # exists, but is not configured for use by the bouncer").
+  - DOCKER-USER
