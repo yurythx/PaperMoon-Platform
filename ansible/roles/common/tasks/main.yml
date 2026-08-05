@@ -17,7 +17,23 @@
       - ufw
       - ca-certificates
       - unattended-upgrades
+      - rsyslog
     state: present
+
+# Achado implantando o CrowdSec (CT 132): neste template Ubuntu 24.04,
+# sshd loga direto no journald (detecta systemd), nunca passa pelo socket
+# clássico de syslog que o rsyslog (imuxsock) escuta — auth.log fica parado
+# pra sempre sem isso, mesmo com a regra "auth,authpriv.* -> auth.log"
+# correta em 50-default.conf. Generalizado pra cá (era só do host do
+# crowdsec) porque qualquer bouncer/agente da Fase 2 do CrowdSec nos outros
+# hosts também depende de auth.log estar vivo.
+- name: Habilitar ponte journald -> rsyslog (imjournal) — auth.log fica parado sem isso
+  ansible.builtin.copy:
+    dest: /etc/rsyslog.d/70-imjournal.conf
+    content: |
+      module(load="imjournal" StateFile="imjournal.state")
+    mode: "0644"
+  notify: Reiniciar rsyslog
 
 # community.general.timezone quebra em ansible-core 2.19 ("Finalization of
 # task args ... is undefined"). Um 'when' comparando um valor registrado com

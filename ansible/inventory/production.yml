@@ -41,3 +41,9 @@ all:
           ansible_host: 192.168.1.131
         crowdsec:
           ansible_host: 192.168.1.132
+    # Fase 2 do CrowdSec — rollout host por host (ver
+    # ansible/roles/crowdsec_bouncer/README.md). Começa só com prometheus
+    # (baixo risco) até verificar de ponta a ponta.
+    crowdsec_bounced_hosts:
+      hosts:
+        prometheus:

@@ -3,3 +3,8 @@
   ansible.builtin.service:
     name: ssh # nome do serviço no Ubuntu/Debian (não "sshd")
     state: restarted
+
+- name: Reiniciar rsyslog
+  ansible.builtin.service:
+    name: rsyslog
+    state: restarted
