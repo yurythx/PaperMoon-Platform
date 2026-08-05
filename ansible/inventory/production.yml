@@ -52,3 +52,4 @@ all:
         komga:
         qbittorrent:
         navidrome:
+        nextcloud:
