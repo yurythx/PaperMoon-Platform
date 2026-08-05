@@ -54,3 +54,4 @@ all:
         navidrome:
         nextcloud:
         nextcloud-mariadb:
+        nextcloud-redis:
