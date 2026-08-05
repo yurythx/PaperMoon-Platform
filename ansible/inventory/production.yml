@@ -46,6 +46,7 @@ all:
     # (baixo risco) até verificar de ponta a ponta.
     crowdsec_bounced_hosts:
       hosts:
+        cloudflare-tunnel:
         prometheus:
         grafana:
         jellyfin:
@@ -57,3 +58,4 @@ all:
         nextcloud-redis:
         vaultwarden:
         papermoon:
+        crowdsec:
