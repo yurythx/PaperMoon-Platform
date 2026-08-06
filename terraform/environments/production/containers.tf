@@ -212,30 +212,9 @@ module "prometheus" {
   ssh_public_keys  = var.ssh_public_keys
 }
 
-module "crowdsec" {
-  source = "../../modules/lxc"
-
-  node_name        = var.pm_node_name
-  vm_id            = 132
-  hostname         = "crowdsec"
-  tags             = ["docker", "security", "monitoring"]
-  cores            = 1
-  memory_mb        = 512 # engine Go + SQLite embutido, sem tráfego alto neste homelab
-  disk_size_gb     = 8
-  template_file_id = var.lxc_template_file_id
-  ip_address       = "192.168.1.132/24"
-  gateway          = var.network_gateway
-  ssh_public_keys  = var.ssh_public_keys
-  # Fase 1: só o engine/LAPI central, sem bind mount de log de outros hosts
-  # ainda (ver docker/crowdsec/README.md sobre a Fase 2, ainda não
-  # implementada — bouncers nos outros 11 LXCs + Proxmox host).
-}
-
 # --- Novos serviços (correção + expansão Terraform/Ansible) ---
 # Keycloak, GLPI, n8n e Zabbix ficaram de fora deliberadamente — juntos
-# somam ~6GB e estourariam o orçamento real de RAM (~13,8GB utilizáveis,
-# já ~12,25GB alocados). Só Homarr + Uptime Kuma agora (~1GB, cabem com
-# folga). Ver docs/terraform.md.
+# somam ~6GB e estourariam o orçamento real de RAM. Ver docs/terraform.md.
 
 # Renomeado de "homepage" pra "homarr" — trocamos de gethomepage/homepage
 # pro Homarr (mesmo CT 140/IP, só o app rodando nele mudou). Nome do
@@ -253,22 +232,6 @@ module "homarr" {
   disk_size_gb     = 4
   template_file_id = var.lxc_template_file_id
   ip_address       = "192.168.1.140/24"
-  gateway          = var.network_gateway
-  ssh_public_keys  = var.ssh_public_keys
-}
-
-module "uptime_kuma" {
-  source = "../../modules/lxc"
-
-  node_name        = var.pm_node_name
-  vm_id            = 141
-  hostname         = "uptime-kuma"
-  tags             = ["docker", "monitoring"]
-  cores            = 1
-  memory_mb        = 512
-  disk_size_gb     = 6
-  template_file_id = var.lxc_template_file_id
-  ip_address       = "192.168.1.141/24"
   gateway          = var.network_gateway
   ssh_public_keys  = var.ssh_public_keys
 }
