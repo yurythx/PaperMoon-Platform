@@ -1,8 +1,18 @@
 # vaultwarden (CT 123)
 
-Gerenciador de senhas (servidor compatível com Bitwarden). Banco interno
-(SQLite, dentro do volume `vaultwarden_data`) — sem container de banco
-separado, conforme `CLAUDE.md`.
+Gerenciador de senhas (servidor compatível com Bitwarden — funciona com o
+app/extensão oficial do Bitwarden apontando pro servidor customizado).
+Banco interno (SQLite, dentro do volume `vaultwarden_data`) — sem
+container de banco separado, conforme `CLAUDE.md`.
+
+## Acesso
+
+| | |
+|---|---|
+| **LAN** | `http://192.168.1.123:8222` |
+| **Domínio público** | `https://vault.papermoon.cloud` — usar este no app/extensão do Bitwarden ("Configurações → Servidor self-hosted") |
+| **Painel admin** | `/admin`, autentica com `ADMIN_TOKEN` (ver abaixo) |
+| **Cadastro** | `SIGNUPS_ALLOWED=false` por padrão — ver seção abaixo pra criar a primeira conta |
 
 ## `ADMIN_TOKEN` precisa ser um hash Argon2, não texto puro
 
@@ -37,10 +47,12 @@ o `docker-compose.yml` manualmente fora do Ansible.
 
 ## `DOMAIN`
 
-Precisa bater exatamente com a URL usada no navegador/app — afeta geração
-de ícones e WebAuthn/passkeys. Por enquanto aponta pro IP da LAN
-(`http://192.168.1.123:8222`); se um dia ganhar acesso público via
-Cloudflare Tunnel, atualizar para o domínio público (`https://...`).
+Precisa bater **exatamente** com a URL usada no navegador/app — afeta
+geração de ícones e WebAuthn/passkeys. Já configurado como
+`https://vault.papermoon.cloud` (domínio público real, via Cloudflare
+Tunnel) — se testar via LAN (`http://192.168.1.123:8222`) em vez do
+domínio, WebAuthn/passkeys não funcionam (exigem HTTPS + domínio
+consistente).
 
 ## `SIGNUPS_ALLOWED=false` por padrão
 

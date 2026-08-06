@@ -1,6 +1,15 @@
 # grafana (CT 130)
 
-Depende do `prometheus` (131) já estar no ar.
+Dashboards de métricas de toda a frota — visualiza o que o Prometheus (131)
+coleta. Depende do `prometheus` (131) já estar no ar.
+
+## Acesso
+
+| | |
+|---|---|
+| **LAN** | `http://192.168.1.130:3000` |
+| **Domínio público** | `https://grafana.papermoon.cloud` — ⚠️ rota do Cloudflare Tunnel com problema no momento (HTTP 530); usar o acesso via LAN até corrigir no painel Zero Trust |
+| **Login** | `GF_ADMIN_USER`/`GF_ADMIN_PASSWORD` (`ansible/playbooks/host_vars/grafana.yml`, vault) |
 
 ## Datasource provisionado automaticamente
 
@@ -16,9 +25,10 @@ descoberta automática, é hardcoded.
 
 ## Dashboards
 
-Nenhum dashboard pré-criado ainda — fica para quando o `node_exporter` for
-adicionado na Fase 4 (ver `docker/prometheus/README.md`), já que sem
-métricas de host não há o que exibir de interessante ainda.
+Nenhum dashboard pré-criado — `node_exporter` já roda em todos os 14 hosts
+(Fase 4 concluída), então as métricas já estão disponíveis no datasource;
+falta só importar/criar os dashboards na UI (ex: o dashboard oficial "Node
+Exporter Full", ID `1860` em grafana.com/dashboards, funciona direto).
 
 ## Rede
 

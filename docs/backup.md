@@ -9,13 +9,17 @@
 | `nextcloud` | volume de dados (arquivos dos usuários) | Alta |
 | `vaultwarden` | volume de dados (SQLite + anexos) | Máxima — perder isso é perder senhas de verdade |
 
-Os outros 8 hosts (Jellyfin, Komga, qBittorrent, Navidrome, Redis do
-Nextcloud, Grafana, Prometheus, Cloudflare Tunnel) **não têm backup
-automatizado** — ou porque o dado é 100% regenerável (Prometheus, cache do
-Redis), ou porque é só configuração/preferência de baixo custo para refazer
-manualmente (Jellyfin/Komga/Navidrome só guardam metadados — a mídia em si
-já está na origem, no storage NFS). Se isso mudar, adicionar `backup_jobs`
-no `host_vars/<host>.yml` correspondente — a role já suporta.
+Os outros 10 hosts (Jellyfin, Komga, qBittorrent, Navidrome, Redis do
+Nextcloud, Grafana, Prometheus, Cloudflare Tunnel, Homarr, test-stack)
+**não têm backup automatizado** — ou porque o dado é 100% regenerável
+(Prometheus, cache do Redis, test-stack), ou porque é só
+configuração/preferência de baixo custo para refazer manualmente
+(Jellyfin/Komga/Navidrome só guardam metadados — a mídia em si já está na
+origem, no storage NFS). Homarr é o único caso "deveria ter, ainda não tem"
+da lista — o board/preferências (SQLite em `homarr_appdata`) só existe
+naquele volume; perder o host sem backup significa remontar o board na mão
+na UI. Se isso mudar, adicionar `backup_jobs` no `host_vars/<host>.yml`
+correspondente — a role já suporta.
 
 ## Como funciona
 

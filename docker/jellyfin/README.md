@@ -1,5 +1,16 @@
 # jellyfin (CT 110)
 
+Streaming de mídia (filmes/séries) — um "Netflix" self-hosted sobre a
+biblioteca em `dados`/`dados2` (NFS).
+
+## Acesso
+
+| | |
+|---|---|
+| **LAN** | `http://192.168.1.110:8096` |
+| **Domínio público** | `https://jellyfin.papermoon.cloud` |
+| **Login** | criado no primeiro acesso (assistente de setup do próprio Jellyfin) |
+
 ## GPU (transcodificação de hardware, AMD VAAPI)
 
 O device `/dev/dri/renderD128` já é passado para dentro da LXC pelo

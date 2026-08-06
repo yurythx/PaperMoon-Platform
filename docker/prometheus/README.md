@@ -1,10 +1,31 @@
 # prometheus (CT 131)
 
+Coleta (scrape) e armazena métricas de toda a frota — a fonte de dados por
+trás dos dashboards do Grafana (130). Uso direto normalmente é só pra
+depurar uma query PromQL ou conferir o status de um scrape target; o dia a
+dia é via Grafana.
+
+## Acesso
+
+| | |
+|---|---|
+| **LAN** | `http://192.168.1.131:9090` |
+| **Domínio público** | `https://prometheus.papermoon.cloud` |
+| **Login** | nenhum — sem autenticação própria (ver nota de segurança abaixo) |
+| **Alvos monitorados** | `http://192.168.1.131:9090/targets` |
+
+⚠️ Prometheus não tem autenticação nativa — expor publicamente via
+Cloudflare Tunnel significa que qualquer um com o link vê métricas
+internas da frota (não segredos, mas ainda assim informação operacional).
+Considerar Cloudflare Access na frente dessa rota se isso for uma
+preocupação real.
+
 ## Monitoramento da frota (Fase 4)
 
-`prometheus.yml` faz scrape de si mesmo (`localhost:9090`) e de todos os 12
+`prometheus.yml` faz scrape de si mesmo (`localhost:9090`) e de todos os 14
 hosts via `node_exporter` (porta 9100, instalado pela role Ansible
-homônima em todo `docker_hosts`). O `ufw` de cada host libera 9100 só para
+homônima em todo `docker_hosts`), além de um job dedicado pro cAdvisor do
+test-stack (150, porta 8081). O `ufw` de cada host libera 9100 só para
 o IP do Prometheus (`firewall_common_ports` em `group_vars/docker_hosts.yml`).
 
 ## Dashboard no Grafana

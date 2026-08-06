@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-A partir do host preparado na Fase 1, criar os 12 LXCs (101, 102, 110-131)
+A partir do host preparado na Fase 1, criar os 14 LXCs (101, 102, 110-123, 130, 131, 140, 150)
 inteiramente via `terraform apply`, sem nenhum passo manual no Proxmox.
 **Nenhum container é pré-existente** — inclusive o Cloudflare Tunnel (101) e
 o PaperMoon (102), que uma versão anterior deste documento tratava
@@ -62,13 +62,13 @@ terraform/
     ├── backend.tf             # state local
     ├── variables.tf
     ├── locals.tf               # storages NFS e listas de bind mounts
-    ├── containers.tf          # 1 module "lxc" por container (101, 102, 110-131)
+    ├── containers.tf          # 1 module "lxc" por container (101, 102, 110-123, 130, 131, 140, 150)
     ├── outputs.tf             # inventário hostname -> IP para o Ansible
     └── terraform.tfvars.example
 ```
 
 Cada container é uma chamada ao mesmo módulo `lxc` — nenhuma duplicação de
-lógica entre os 12 CTs.
+lógica entre os 14 CTs.
 
 ## Decisões técnicas
 
@@ -143,7 +143,7 @@ sentido na prática, é uma mudança pequena em `locals.tf`
 ### Convenção de IP: `192.168.1.<CT ID>`
 
 Cada container usa o IP terminado no seu próprio CT ID (ex: CT 110 →
-`192.168.1.110`), aplicado uniformemente aos 12 containers, incluindo 101 e
+`192.168.1.110`), aplicado uniformemente aos 14 containers, incluindo 101 e
 102. **Antes do primeiro `apply`, confirme que nenhum desses IPs já está em
 uso** por outro dispositivo na rede (impressora, DHCP de outro host, etc.) —
 o Terraform não vai detectar esse conflito por conta própria.
@@ -191,9 +191,9 @@ terraform apply
 ## Verificação pós-apply
 
 ```bash
-terraform output inventory   # deve listar hostname -> IP dos 12 containers
+terraform output inventory   # deve listar hostname -> IP dos 14 containers
 ```
-No Proxmox: os CTs 101, 102, 110-131 devem aparecer criados e rodando, com
+No Proxmox: os CTs 101, 102, 110-123, 130, 131, 140, 150 devem aparecer criados e rodando, com
 os mount points visíveis em `pct config <vmid>`.
 
 ## Próximo passo

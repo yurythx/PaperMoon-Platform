@@ -1,5 +1,17 @@
 # navidrome (CT 113)
 
+Streaming de música — um "Spotify" self-hosted sobre a biblioteca de áudio
+em `dados`/`dados2` (NFS). Compatível com apps Subsonic (DSub, Symfonium,
+etc.) além da própria WebUI.
+
+## Acesso
+
+| | |
+|---|---|
+| **LAN** | `http://192.168.1.113:4533` |
+| **Domínio público** | `https://navidrome.papermoon.cloud` |
+| **Login** | criado no primeiro acesso (assistente de setup do próprio Navidrome) |
+
 ## Por que `ND_MUSICFOLDER=/music` com duas subpastas, em vez de duas variáveis
 
 O Navidrome só aceita **uma** pasta raiz de música (`ND_MUSICFOLDER`), ao

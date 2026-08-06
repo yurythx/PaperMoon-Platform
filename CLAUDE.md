@@ -72,7 +72,7 @@ Regras rígidas:
 
 ### Capacidade do host — restrição real de dimensionamento
 
-16GB é pouco para 12 LXCs simultâneos (os 2 abaixo + os 10 novos). Reserva
+16GB é pouco para 14 LXCs simultâneos. Reserva
 mínima antes de sobrar RAM para os containers: ~1,5GB para o próprio
 Proxmox. Todo módulo Terraform de LXC deve ser dimensionado de forma
 enxuta (ver `docs/terraform.md` para a tabela de `cores`/`memory_mb` por
@@ -116,6 +116,7 @@ downloads/{complete,incomplete,watch}
 | 130 | Grafana | |
 | 131 | Prometheus | |
 | 140 | Homarr | Portal/dashboard central — trocado de gethomepage/homepage (achamos um bug real de cache não resolvido; Homarr tem mais recursos). Board configurado na própria UI, não em arquivo |
+| 150 | test-stack | Locust + OWASP ZAP + cAdvisor — LXC isolada de teste de carga/segurança, nunca compartilhada com nenhuma stack de produção. Ver `docker/test-stack/README.md` (aviso de segurança sobre o Keycloak alvo antes de rodar qualquer teste) |
 
 CrowdSec (132) e Uptime Kuma (141) foram retirados da stack — CT destruído
 via Terraform, bouncer desinstalado dos demais hosts antes disso. Ver git
@@ -139,6 +140,7 @@ PostgreSQL/MariaDB desnecessariamente.
 | Grafana | SQLite (interno) |
 | Prometheus | TSDB próprio |
 | Homarr | SQLite (interno) |
+| test-stack | Sem banco (Locust/ZAP/cAdvisor não persistem estado de negócio) |
 
 ## Estrutura do repositório
 

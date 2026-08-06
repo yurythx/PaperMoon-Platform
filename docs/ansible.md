@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-Deixar os 12 LXCs criados na Fase 2 totalmente configurados (sistema,
+Deixar os 14 LXCs criados na Fase 2 totalmente configurados (sistema,
 Docker, firewall) e prontos para receber qualquer stack — sem repetir
 lógica entre hosts ou entre apps.
 
@@ -19,7 +19,7 @@ ansible/
 ├── ansible.cfg
 ├── requirements.yml            # collections: community.general, community.docker, ansible.posix
 ├── site.yml                     # wrapper -> playbooks/site.yml (para bater com o comando do CLAUDE.md)
-├── inventory/production.yml     # 12 hosts, IPs fixos (bater com o output do Terraform)
+├── inventory/production.yml     # 14 hosts, IPs fixos (bater com o output do Terraform)
 ├── files/                       # segredos não-YAML (ex: credentials.json do cloudflared)
 ├── playbooks/
 │   ├── site.yml                 # aplica common+docker_engine+node_exporter+backup+firewall em todos os hosts
@@ -74,7 +74,7 @@ com nenhum pacote Python do próprio sistema Proxmox.
 ### Inventário estático
 
 Ver decisão já registrada na proposta de arquitetura: os IPs são fixos
-(definidos no Terraform), então listar os 12 hosts à mão em
+(definidos no Terraform), então listar os 14 hosts à mão em
 `inventory/production.yml` é mais simples que manter um inventário
 dinâmico. Conferir com `terraform output inventory` se algo divergir.
 
@@ -172,7 +172,7 @@ ansible docker_hosts -a "ufw status verbose"
 
 ## Status
 
-Fase 3b concluída — os 12 apps têm stack + playbook de deploy (ver
+Fase 3b concluída — os 14 apps têm stack + playbook de deploy (ver
 `docs/docker.md` para a tabela completa). Fase 4 (monitoramento de frota,
 backup, atualizações, disaster recovery) também concluída — ver
 `docs/backup.md`, `docs/atualizacoes.md` e `docs/disaster-recovery.md`.

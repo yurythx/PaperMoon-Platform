@@ -1,8 +1,15 @@
 # cloudflare-tunnel (CT 101)
 
-Ingress público único de toda a plataforma. Só faz conexões de **saída**
-para a borda da Cloudflare — não precisa de nenhuma porta liberada de
-entrada no `ufw` (nem mesmo para a LAN).
+Ingress público único de toda a plataforma — é o motivo de `papermoon.cloud`
+e todos os subdomínios (`nextcloud.`, `vault.`, `jellyfin.`, etc.)
+funcionarem sem nenhuma porta aberta no roteador de casa. Só faz conexões
+de **saída** para a borda da Cloudflare — não precisa de nenhuma porta
+liberada de entrada no `ufw` (nem mesmo para a LAN).
+
+**Sem UI/acesso direto neste host** — é só o processo `cloudflared`
+rodando. Gerenciar rotas (quais domínios apontam pra qual serviço) é feito
+no [painel Cloudflare Zero Trust](https://one.dash.cloudflare.com/) →
+Networks → Tunnels, não aqui.
 
 ## Túnel remotely-managed (painel Zero Trust)
 

@@ -1,5 +1,17 @@
 # qbittorrent (CT 112)
 
+Cliente de torrent com WebUI — baixa pra `downloads/{complete,incomplete,watch}`
+(NFS, pool `dados`), de onde os arquivos são organizados manualmente nas
+bibliotecas definitivas (Jellyfin/Komga/Navidrome).
+
+## Acesso
+
+| | |
+|---|---|
+| **LAN** | `http://192.168.1.112:8080` |
+| **Domínio público** | `https://torrent.papermoon.cloud` |
+| **Login** | usuário `admin`, senha temporária **gerada no primeiro start** — pegar em `docker logs qbittorrent` (procure por "temporary password"). Troque em **Ferramentas → Opções → WebUI** assim que entrar. |
+
 ## Downloads: só o pool `dados`
 
 Como já registrado em `docs/terraform.md`, `downloads/{complete,incomplete,watch}`

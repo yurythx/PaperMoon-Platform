@@ -1,8 +1,16 @@
 # Checklist — Testar em produção sem medo
 
-Contexto: o PaperMoon já está no ar de verdade, numa VPS, com clientes
-reais. Este documento separa duas fases com riscos completamente
-diferentes — não confundir as duas é o item mais importante deste
+> **✅ Executado com sucesso — este documento agora é histórico.** As Fases
+> A e B abaixo já foram concluídas: a plataforma está em produção real em
+> `https://papermoon.cloud` (Cloudflare Tunnel), com os 14 hosts no ar e a
+> VPS antiga já desligada. Mantido como registro do processo e como
+> referência caso um cutover parecido seja necessário de novo (nova VPS,
+> nova migração). Para o estado atual da infraestrutura, ver `README.md`
+> (raiz) e `docs/docker.md`.
+
+Contexto histórico: o PaperMoon já estava no ar de verdade, numa VPS, com
+clientes reais. Este documento separou duas fases com riscos completamente
+diferentes — não confundir as duas era o item mais importante deste
 checklist.
 
 ## Por que dá pra testar a Fase A sem medo nenhum

@@ -20,7 +20,7 @@ Pressupõe que você tem: um Proxmox novo instalado, o storage NFS
    terraform init
    terraform apply
    ```
-   Recria os 12 LXCs, vazios (sem dado nenhum ainda).
+   Recria os 14 LXCs, vazios (sem dado nenhum ainda).
 3. **Ansible — configuração base** (`docs/ansible.md`):
    ```bash
    cd ansible
@@ -38,7 +38,7 @@ Pressupõe que você tem: um Proxmox novo instalado, o storage NFS
    ```
    Aplica `common` (usuário suporte, SSH, timezone, unattended-upgrades),
    `docker_engine`, `node_exporter`, `backup` (cria a estrutura, mas sem
-   dado ainda) e `firewall` em todos os 12 hosts.
+   dado ainda) e `firewall` em todos os 14 hosts.
 4. **Restaurar backups ANTES de subir as stacks com dado** — copiar os
    arquivos de `docs/backup.md` para dentro do host (ou para o diretório
    `backup_destination_dir` configurado) e restaurar (comandos em
@@ -61,6 +61,8 @@ Pressupõe que você tem: um Proxmox novo instalado, o storage NFS
    ansible-playbook playbooks/deploy-grafana.yml
    ansible-playbook playbooks/deploy-cloudflare-tunnel.yml
    ansible-playbook playbooks/deploy-papermoon.yml
+   ansible-playbook playbooks/deploy-homarr.yml
+   ansible-playbook playbooks/deploy-test-stack.yml   # opcional — não guarda dado de negócio, pode ficar por último ou fora
    ```
 6. **Verificar**: `docs/ansible.md`/`docs/docker.md` têm os comandos de
    verificação por camada. Conferir especialmente que os dados restaurados

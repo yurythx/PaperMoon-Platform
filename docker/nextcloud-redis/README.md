@@ -3,6 +3,10 @@
 Cache/lock de transação e armazenamento de sessão do Nextcloud (120).
 Container dedicado, seguindo a mesma lógica de `nextcloud-mariadb`.
 
+**Sem acesso direto** — só o Nextcloud (120) conecta via rede interna. Pra
+inspecionar na mão: `docker exec -it nextcloud-redis redis-cli -a
+<REDIS_PASSWORD>`.
+
 ## Persistência: deliberadamente sem volume
 
 Redis aqui é usado só como cache e file-locking, não como fonte de verdade

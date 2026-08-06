@@ -1,7 +1,16 @@
 # nextcloud (CT 120)
 
+Armazenamento de arquivos e colaboração — um "Google Drive" self-hosted.
 Depende de `nextcloud-mariadb` (121) e `nextcloud-redis` (122) já estarem
 no ar antes do primeiro `docker compose up`.
+
+## Acesso
+
+| | |
+|---|---|
+| **LAN** | `http://192.168.1.120:8080` |
+| **Domínio público** | `https://nextcloud.papermoon.cloud` |
+| **Login** | conta admin criada no primeiro `docker compose up` (`NEXTCLOUD_ADMIN_USER`/`NEXTCLOUD_ADMIN_PASSWORD`, `ansible/playbooks/host_vars/nextcloud.yml`, vault) |
 
 ## Imagem: `nextcloud:29-apache`, não separado nginx+php-fpm
 
@@ -21,10 +30,20 @@ fica para a Fase 4 (Operação).
 
 ## `NEXTCLOUD_TRUSTED_DOMAINS`
 
-Por padrão só o IP da LAN (`192.168.1.120`). Se/quando o Nextcloud ganhar
-acesso público via Cloudflare Tunnel, adicionar o domínio público aqui
-também (lista separada por espaço) — senão o Nextcloud recusa a requisição
-com "Trusted domain error".
+**Cuidado real, já mordeu antes:** essa env var só é lida por `occ` no
+**install-time** (primeiro `docker compose up`) — mudar o valor depois e
+subir de novo **não** atualiza a instância já instalada, ela continua
+recusando com "Trusted domain error" para qualquer domínio adicionado
+depois. Para adicionar um domínio numa instância já rodando:
+
+```bash
+docker exec -u www-data nextcloud php occ config:system:get trusted_domains
+docker exec -u www-data nextcloud php occ config:system:set trusted_domains <próximo_índice> --value=<dominio>
+```
+
+`ansible/playbooks/deploy-nextcloud.yml` já faz isso automaticamente (tasks
+pós-instalação, idempotentes) — não precisa rodar na mão, mas é útil saber
+o motivo se um domínio novo "não pegar" mesmo depois do deploy.
 
 ## Cron
 
@@ -43,7 +62,7 @@ troque nos outros dois também.
 
 ## Rede
 
-Porta 8080 publicada e liberada no `ufw` para a LAN inteira por enquanto
-(`ansible/playbooks/host_vars/nextcloud.yml`). Se um dia o Nextcloud for exposto
-publicamente via Cloudflare Tunnel, restringir essa regra ao IP do túnel
-(101), no mesmo padrão já usado para as portas de banco/cache.
+Porta 8080 publicada e liberada no `ufw` para a LAN inteira
+(`ansible/playbooks/host_vars/nextcloud.yml`) — o acesso público real passa
+pelo Cloudflare Tunnel (101), que alcança essa mesma porta pela LAN, não
+por uma regra de firewall dedicada só a ele.

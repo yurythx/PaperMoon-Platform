@@ -4,6 +4,14 @@ Servidor de manga/quadrinhos/ebooks. `SERVER_PORT=25600` (em vez do default
 8080 do Spring Boot) só para deixar host e container na mesma porta e
 evitar confusão de mapeamento.
 
+## Acesso
+
+| | |
+|---|---|
+| **LAN** | `http://192.168.1.111:25600` |
+| **Domínio público** | `https://komga.papermoon.cloud` |
+| **Login** | criado no primeiro acesso (assistente de setup do próprio Komga) |
+
 ## Bibliotecas duplas (pools `dados`/`dados2`)
 
 Mesma lógica do Jellyfin: cada categoria (`manga`, `comics`, `ebooks`)

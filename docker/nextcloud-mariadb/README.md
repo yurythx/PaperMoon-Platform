@@ -5,6 +5,10 @@ por isso vive na sua própria stack/container em vez de dentro de
 `docker/nextcloud/`, seguindo a regra do projeto de "banco dedicado só
 quando recomendado" e stacks independentes entre si.
 
+**Sem acesso direto** — ninguém loga aqui como usuário final, só o
+Nextcloud (120) conecta via rede interna. Pra inspecionar o banco na mão:
+`docker exec -it nextcloud-mariadb mariadb -u root -p`.
+
 ## Configuração
 
 Flags do `command` seguem a recomendação oficial do Nextcloud para MariaDB
@@ -22,9 +26,9 @@ consegue conectar.
 ## Backup
 
 Dados ficam no volume nomeado `mariadb_data` (disco local do LXC, sem NFS —
-ver decisão em `docs/terraform.md`). Backup via `mysqldump` agendado será
-tratado na Fase 4 (Operação); por ora, um `docker exec nextcloud-mariadb
-mysqldump -u root -p --all-databases` manual já serve de contingência.
+ver decisão em `docs/terraform.md`). Dump via `mysqldump` agendado
+diariamente pela role `backup` (Fase 4 concluída — ver `docs/backup.md`,
+prioridade "Alta").
 
 ## Variáveis (`.env`)
 
