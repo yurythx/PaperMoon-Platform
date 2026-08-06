@@ -23,6 +23,4 @@ scrape_configs:
           - "192.168.1.123:9100" # vaultwarden
           - "192.168.1.130:9100" # grafana
           - "192.168.1.131:9100" # prometheus (a si mesmo, via node_exporter)
-          - "192.168.1.132:9100" # crowdsec
           - "192.168.1.140:9100" # homarr
-          - "192.168.1.141:9100" # uptime-kuma

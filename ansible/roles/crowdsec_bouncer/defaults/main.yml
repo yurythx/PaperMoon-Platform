@@ -1,7 +1,0 @@
----
-# Versão pinada (não "latest") — reproducibilidade: um `site.yml` rodado
-# daqui a 6 meses não deve baixar um binário diferente do que foi testado.
-# Atualizar deliberadamente, conferindo o changelog antes.
-crowdsec_bouncer_version: "0.0.36"
-
-crowdsec_lapi_url: "http://192.168.1.132:8080"

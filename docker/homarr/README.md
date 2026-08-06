@@ -33,8 +33,7 @@ superfície de ataque desnecessária caso o Homarr seja comprometido.
 
 Configurar cada app apontando pro domínio (`https://<serviço>.papermoon.cloud`)
 onde já existe rota no Cloudflare Tunnel; os que não têm rota ainda ficam
-por IP:porta da LAN até existir uma. Mesma lista documentada em
-`docker/uptime-kuma/README.md` (monitores) — reaproveitar aqui:
+por IP:porta da LAN até existir uma.
 
 | Serviço | Link |
 |---|---|
@@ -47,8 +46,9 @@ por IP:porta da LAN até existir uma. Mesma lista documentada em
 | qBittorrent | `https://torrent.papermoon.cloud` |
 | Grafana | `http://192.168.1.130:3000` (sem rota pública ainda) |
 | Prometheus | `https://prometheus.papermoon.cloud` |
-| Uptime Kuma | `https://status.papermoon.cloud` |
-| CrowdSec | `http://192.168.1.132:8080` — **nunca deve ter rota pública** (motor de decisões que protege a frota inteira, ver `docker/crowdsec/README.md`) |
+
+CrowdSec e Uptime Kuma foram retirados da stack — remover os widgets/links
+correspondentes do board manualmente na UI do Homarr se ainda estiverem lá.
 
 ## Backup
 

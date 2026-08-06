@@ -1,8 +1,0 @@
----
-# Fase 2 do CrowdSec — roda só contra o grupo "crowdsec_bounced_hosts" do
-# inventário (rollout host por host, nunca "hosts: docker_hosts" direto,
-# de propósito — ver ansible/roles/crowdsec_bouncer/README.md).
-- name: Deploy CrowdSec firewall bouncer
-  hosts: crowdsec_bounced_hosts
-  roles:
-    - crowdsec_bouncer

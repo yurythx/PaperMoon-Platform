@@ -41,14 +41,26 @@ completo dos bugs reais encontrados e corrigidos nesse processo.
 | `qbittorrent` | 112 | ✅ testado | HTTP 200 confirmado; porta 6881 aberta pra internet (peers) — precisa port-forward no roteador |
 | `navidrome` | 113 | ✅ testado | `ND_MUSICFOLDER` único com 2 subpastas montadas (dados+dados2) |
 | `vaultwarden` | 123 | ✅ testado | `ADMIN_TOKEN` com hash Argon2 real; painel `/admin` HTTP 200 confirmado |
-| `prometheus` | 131 | ✅ testado | `/-/healthy` confirmado; scrape de todos os 12 hosts via node_exporter (Fase 4) |
+| `prometheus` | 131 | ✅ testado | `/-/healthy` confirmado; scrape dos 13 hosts via node_exporter (Fase 4) |
 | `grafana` | 130 | ✅ testado | datasource do Prometheus confirmado via API (`/api/datasources`) |
 | `papermoon` | 102 | ✅ testado | `deploy.sh` rodou ponta a ponta (build+migrate+health-check); 7 containers `healthy`; portas 3000/8000 publicadas e restritas via ufw ao IP do Cloudflare Tunnel. **SMTP/Asaas ainda são placeholder** — preencher antes de depender de e-mail/cobrança reais |
 | `cloudflare-tunnel` | 101 | ✅ testado | Túnel remotely-managed (token, não `config.yml`/`credentials.json` — ver `docker/cloudflare-tunnel/README.md`). Conectado à borda Cloudflare, 4 conexões QUIC confirmadas |
-| `crowdsec` | 132 | ✅ testado | Engine/LAPI central (Fase 1) + bouncer nos outros 12 `docker_hosts`, incluindo `papermoon`/`vaultwarden` (Fase 2, concluída). `cscli bouncers list` confirma os 13 hosts com "Last API pull" recente. Proxmox host de fora, de propósito (ver `docker/crowdsec/README.md`) |
 | `papermoon` | 102 | ✅ | não usa a role `docker_app` genérica — reaproveita o `deploy.sh` próprio do app (git pull + build + migrate + health-check + rollback) |
 | `homarr` | 140 | ⏳ pendente | Dashboard central — ver "Abandonado: gethomepage/homepage" abaixo pro porquê da troca |
-| `uptime-kuma` | 141 | ⏳ pendente | Monitores criados manualmente na UI, sem mecanismo de pré-config (ver `docker/uptime-kuma/README.md`) |
+
+### Retirado da stack: CrowdSec (132) e Uptime Kuma (141)
+
+Decisão do usuário: remover os dois. Ordem seguida (importa, por causa do
+bouncer instalado nos outros hosts): 1) `remove-crowdsec-bouncer.yml`
+desinstalou o `crowdsec-firewall-bouncer` (systemd + iptables) dos 13
+hosts que tinham — antes de destruir o engine central, pra não deixar
+bouncer órfão tentando falar com um LAPI que não responde mais; 2)
+`terraform apply -target=module.crowdsec -target=module.uptime_kuma`
+destruiu as duas LXCs. Removidos do repo: `docker/crowdsec/`,
+`docker/uptime-kuma/`, `ansible/roles/crowdsec_bouncer/`, playbooks e
+`host_vars` correspondentes, entradas no inventário e no
+`docker/prometheus/prometheus.yml`. Histórico completo no git log
+(`chore(terraform): remove crowdsec and uptime-kuma modules`).
 
 ### Abandonado: gethomepage/homepage (bug de cache real, não resolvido)
 

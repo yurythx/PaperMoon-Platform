@@ -1,8 +1,0 @@
----
-- name: Deploy Uptime Kuma
-  hosts: uptime-kuma
-  roles:
-    - role: docker_app
-      vars:
-        docker_app_name: uptime-kuma
-        docker_app_compose_src: "{{ playbook_dir }}/../../docker/uptime-kuma/docker-compose.yml"
