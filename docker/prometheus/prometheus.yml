@@ -24,3 +24,13 @@ scrape_configs:
           - "192.168.1.130:9100" # grafana
           - "192.168.1.131:9100" # prometheus (a si mesmo, via node_exporter)
           - "192.168.1.140:9100" # homarr
+          - "192.168.1.150:9100" # test-stack (a LXC em si, node_exporter padrão)
+
+  # cAdvisor da LXC de testes (150) — métricas dos 3 containers daquela
+  # stack (Locust/ZAP/cAdvisor), não da frota inteira. Job separado do
+  # "node" acima porque o formato de métricas do cAdvisor é bem diferente
+  # do node_exporter. TrueNAS e o Keycloak da Prefeitura ficam de fora de
+  # propósito — infraestrutura de terceiro, fora do escopo desta stack.
+  - job_name: cadvisor-test-stack
+    static_configs:
+      - targets: ["192.168.1.150:8081"]

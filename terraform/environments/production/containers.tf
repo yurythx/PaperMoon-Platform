@@ -235,3 +235,23 @@ module "homarr" {
   gateway          = var.network_gateway
   ssh_public_keys  = var.ssh_public_keys
 }
+
+# LXC de testes — Locust (carga) + OWASP ZAP (segurança) + cAdvisor (métricas
+# dos containers desta própria stack). Isolada de propósito: gerar carga ou
+# rodar scans de segurança a partir de um host que também hospeda produção
+# seria um risco desnecessário. Ver docker/test-stack/README.md.
+module "test_stack" {
+  source = "../../modules/lxc"
+
+  node_name        = var.pm_node_name
+  vm_id            = 150
+  hostname         = "test-stack"
+  tags             = ["docker", "testing"]
+  cores            = 2
+  memory_mb        = 1024 # Locust leve + ZAP (JVM) + cAdvisor — enxuto de propósito, ver docs/terraform.md
+  disk_size_gb     = 10
+  template_file_id = var.lxc_template_file_id
+  ip_address       = "192.168.1.150/24"
+  gateway          = var.network_gateway
+  ssh_public_keys  = var.ssh_public_keys
+}

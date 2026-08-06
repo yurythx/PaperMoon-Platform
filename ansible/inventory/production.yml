@@ -41,6 +41,8 @@ all:
           ansible_host: 192.168.1.131
         homarr:
           ansible_host: 192.168.1.140
+        test-stack:
+          ansible_host: 192.168.1.150
     # CrowdSec (132) e Uptime Kuma (141) foram retirados da stack — engine +
     # bouncer (Fase 2) desinstalados de todos os hosts antes de destruir as
     # LXCs no Terraform. Ver git log se precisar recuperar a configuração.

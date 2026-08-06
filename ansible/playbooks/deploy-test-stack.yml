@@ -1,0 +1,23 @@
+---
+# Stack de teste de carga/segurança (Locust + OWASP ZAP + cAdvisor) — CT 150.
+# Usa a role docker_app genérica, igual a toda outra stack desta plataforma
+# (ver docker/test-stack/README.md pro porquê disso e avisos de segurança
+# antes de rodar qualquer teste de carga de verdade).
+- name: Deploy test-stack (Locust + ZAP + cAdvisor)
+  hosts: test-stack
+  roles:
+    - role: docker_app
+      vars:
+        docker_app_name: test-stack
+        docker_app_compose_src: "{{ playbook_dir }}/../../docker/test-stack/docker-compose.yml"
+        docker_app_extra_files:
+          - { src: "{{ playbook_dir }}/../../docker/test-stack/locustfile.py", dest: "locustfile.py" }
+        docker_app_env:
+          KEYCLOAK_URL: "{{ test_stack_keycloak_url }}"
+          REALM_NAME: "{{ test_stack_realm_name }}"
+          CLIENT_ID: "{{ test_stack_client_id }}"
+          CLIENT_SECRET: "{{ test_stack_client_secret }}"
+          LOCUST_TEST_USERNAME: "{{ test_stack_locust_username }}"
+          LOCUST_TEST_PASSWORD: "{{ test_stack_locust_password }}"
+          DJANGO_API_URL: "{{ test_stack_django_api_url }}"
+          NEXTJS_URL: "{{ test_stack_nextjs_url }}"

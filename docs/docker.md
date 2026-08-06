@@ -41,12 +41,13 @@ completo dos bugs reais encontrados e corrigidos nesse processo.
 | `qbittorrent` | 112 | ✅ testado | HTTP 200 confirmado; porta 6881 aberta pra internet (peers) — precisa port-forward no roteador |
 | `navidrome` | 113 | ✅ testado | `ND_MUSICFOLDER` único com 2 subpastas montadas (dados+dados2) |
 | `vaultwarden` | 123 | ✅ testado | `ADMIN_TOKEN` com hash Argon2 real; painel `/admin` HTTP 200 confirmado |
-| `prometheus` | 131 | ✅ testado | `/-/healthy` confirmado; scrape dos 13 hosts via node_exporter (Fase 4) |
+| `prometheus` | 131 | ✅ testado | `/-/healthy` confirmado; scrape dos 14 hosts via node_exporter (Fase 4) + job dedicado pro cAdvisor do test-stack (150) |
 | `grafana` | 130 | ✅ testado | datasource do Prometheus confirmado via API (`/api/datasources`) |
 | `papermoon` | 102 | ✅ testado | `deploy.sh` rodou ponta a ponta (build+migrate+health-check); 7 containers `healthy`; portas 3000/8000 publicadas e restritas via ufw ao IP do Cloudflare Tunnel. **SMTP/Asaas ainda são placeholder** — preencher antes de depender de e-mail/cobrança reais |
 | `cloudflare-tunnel` | 101 | ✅ testado | Túnel remotely-managed (token, não `config.yml`/`credentials.json` — ver `docker/cloudflare-tunnel/README.md`). Conectado à borda Cloudflare, 4 conexões QUIC confirmadas |
 | `papermoon` | 102 | ✅ | não usa a role `docker_app` genérica — reaproveita o `deploy.sh` próprio do app (git pull + build + migrate + health-check + rollback) |
 | `homarr` | 140 | ⏳ pendente | Dashboard central — ver "Abandonado: gethomepage/homepage" abaixo pro porquê da troca |
+| `test-stack` | 150 | ⏳ pendente | Locust + OWASP ZAP + cAdvisor, LXC isolada de teste de carga/segurança — usa a role `docker_app` genérica, sem role nova. Ver `docker/test-stack/README.md` (aviso de segurança antes de rodar qualquer teste contra o Keycloak real da Prefeitura) |
 
 ### Retirado da stack: CrowdSec (132) e Uptime Kuma (141)
 

@@ -32,15 +32,16 @@ Revisado para caber com folga:
 | grafana (130) | 1 | 512 | |
 | prometheus (131) | 1 | 1024 | Poucos hosts/exporters neste homelab |
 | homarr (140) | 1 | 512 | Dashboard central — trocado de gethomepage/homepage (bug de cache real não resolvido, ver `docker/homarr/README.md`) |
-| **Total** | **18** | **~12,25GB** | + ~1,5GB reservado pro Proxmox = ~13,75GB de ~15,3GB utilizáveis (**~10,1% de folga**) |
+| test-stack (150) | 2 | 1024 | Locust + OWASP ZAP (JVM) + cAdvisor — LXC isolada de teste de carga/segurança, ver `docker/test-stack/README.md` |
+| **Total** | **20** | **~13,25GB** | + ~1,5GB reservado pro Proxmox = ~14,75GB de ~15,3GB utilizáveis (**~3,6% de folga — apertado de novo**) |
 
 CrowdSec (132) e Uptime Kuma (141) foram retirados da stack (destruídos via
-Terraform) — orçamento acima já reflete a remoção. ~1GB de RAM liberado.
+Terraform), liberando ~1GB — reocupado quase todo pela LXC de testes (150)
+adicionada em seguida. Saldo líquido: praticamente neutro em RAM.
 
 **Ainda sem espaço pra Keycloak+GLPI+n8n+Zabbix** (avaliados numa correção
-de infraestrutura posterior) — juntos somariam ~6GB a mais, continuam fora
-do orçamento mesmo com o espaço liberado pela remoção acima. Decisão
-registrada: ficam de fora até resolver hardware.
+de infraestrutura posterior) — juntos somariam ~6GB a mais, não cabem no
+orçamento atual. Decisão registrada: ficam de fora até resolver hardware.
 
 `cores` é um teto de CPU (soft cap via cgroups do LXC), não uma reserva
 exclusiva — por isso a soma pode passar do número de threads físicas (12)

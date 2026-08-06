@@ -1,0 +1,25 @@
+# PLACEHOLDER — substitua os valores abaixo e criptografe antes de produção:
+#   ansible-vault encrypt host_vars/test-stack.yml
+#
+# Ver docker/test-stack/README.md — aviso de segurança sobre o Keycloak alvo
+# (servidor real da Prefeitura) antes de preencher usuário/senha de teste.
+
+test_stack_keycloak_url: "https://sso.rondonopolis.mt.gov.br"
+test_stack_realm_name: "CHANGE_ME_REALM"          # ex: Prefeitura
+test_stack_client_id: "CHANGE_ME_CLIENT_ID"       # ex: papermoon
+test_stack_client_secret: ""                       # vazio se o client for público (sem client authentication)
+
+# Conta de TESTE dedicada — NUNCA uma conta real de funcionário (risco de
+# lockout por política do AD). Peça pra quem administra o AD criar uma.
+test_stack_locust_username: "CHANGE_ME_USUARIO_DE_TESTE"
+test_stack_locust_password: "CHANGE_ME_SENHA_DE_TESTE"
+
+test_stack_django_api_url: "http://192.168.1.102:8000"
+test_stack_nextjs_url: "http://192.168.1.102:3000"
+
+# UI do Locust/ZAP/cAdvisor acessível de qualquer host da LAN — não exposto
+# via Cloudflare Tunnel (não tem rota pública configurada, de propósito).
+firewall_allowed_ports:
+  - { port: 8089, proto: tcp, from: "192.168.1.0/24" } # Locust
+  - { port: 8080, proto: tcp, from: "192.168.1.0/24" } # OWASP ZAP
+  - { port: 8081, proto: tcp, from: "192.168.1.0/24" } # cAdvisor

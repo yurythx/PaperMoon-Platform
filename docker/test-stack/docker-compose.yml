@@ -1,0 +1,61 @@
+# Stack de testes de carga/segurança — Locust + OWASP ZAP + cAdvisor.
+# Enxuta de propósito: roda numa LXC dedicada (150), separada da stack de
+# produção, exatamente pra poder gerar carga/scans sem risco de derrubar
+# nada real por engano. Ver README.md deste diretório antes de rodar.
+
+services:
+  locust:
+    image: locustio/locust:2
+    container_name: locust
+    restart: unless-stopped
+    ports:
+      - "8089:8089"
+    volumes:
+      - ./locustfile.py:/mnt/locust/locustfile.py:ro
+    environment:
+      KEYCLOAK_URL: ${KEYCLOAK_URL}
+      REALM_NAME: ${REALM_NAME}
+      CLIENT_ID: ${CLIENT_ID}
+      CLIENT_SECRET: ${CLIENT_SECRET}
+      LOCUST_TEST_USERNAME: ${LOCUST_TEST_USERNAME}
+      LOCUST_TEST_PASSWORD: ${LOCUST_TEST_PASSWORD}
+      DJANGO_API_URL: ${DJANGO_API_URL}
+      NEXTJS_URL: ${NEXTJS_URL}
+    command: -f /mnt/locust/locustfile.py
+    # Sobe só a UI web (porta 8089) — quem quiser rodar sem interação
+    # (--headless --users N --spawn-rate N --run-time Xm) troca o command
+    # na hora via 'docker compose run' em vez de editar isto.
+
+  zap:
+    image: zaproxy/zap-stable
+    container_name: zap
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    command: zap-webswing.sh
+    # zap-webswing.sh sobe a UI completa do ZAP acessível via navegador em
+    # http://<IP_LXC_TESTES>:8080/zap/ — sem precisar de X11/VNC.
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    restart: unless-stopped
+    ports:
+      - "8081:8080" # 8080 já é do ZAP nesta stack — cAdvisor publicado em 8081
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+      - /dev/disk:/dev/disk:ro
+    # Estes 5 volumes são os mesmos do quickstart oficial do cAdvisor — os
+    # caminhos são da LXC (150) onde este compose roda, não do Proxmox host;
+    # cAdvisor aqui só enxerga/mede os 3 containers desta própria stack de
+    # testes, não a frota inteira (cada host já tem seu node_exporter
+    # próprio pro Prometheus — ver docs/terraform.md).
+    #
+    # 'privileged: true' NÃO está ligado de propósito (mesma postura de
+    # segurança do resto da plataforma — LXCs/containers não-privilegiados
+    # por padrão). Se as métricas de I/O de disco vierem incompletas dentro
+    # desta LXC, esse é o próximo passo de troubleshooting documentado, não
+    # uma ligação automática.
