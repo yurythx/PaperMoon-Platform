@@ -5,7 +5,7 @@
 
 services:
   locust:
-    image: locustio/locust:2
+    image: locustio/locust:latest
     container_name: locust
     restart: unless-stopped
     ports:
