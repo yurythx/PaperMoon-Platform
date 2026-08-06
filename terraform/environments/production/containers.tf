@@ -89,7 +89,14 @@ module "qbittorrent" {
   tags             = ["docker", "downloads"]
   cores            = 1
   memory_mb        = 512
-  disk_size_gb     = 8
+  disk_size_gb     = 16 # era 8 no Terraform mas o disco ao vivo já é 16GB (drift pré-existente,
+  # achado ao planejar a remoção do CrowdSec) — corrigido pra bater com a
+  # realidade em vez de arriscar um "shrink" destrutivo. Uso real é baixo
+  # (~1,9GB/13%, confirmado via 'df -h') porque downloads vão pro bind mount
+  # NFS (local.downloads_mount_points), não pro rootfs — 16GB é folga, não
+  # necessidade, mas encolher um disco de LXC não é uma operação segura/
+  # suportada de forma simples, então alinhar a config à realidade é a
+  # correção certa aqui, não o contrário.
   template_file_id = var.lxc_template_file_id
   ip_address       = "192.168.1.112/24"
   gateway          = var.network_gateway
